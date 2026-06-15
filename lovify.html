@@ -149,14 +149,16 @@
             background: #000;
             touch-action: none;
         }
+
         .story-bar-track {
             flex: 1;
             height: 3px;
-            background: rgba(255,255,255,0.30);
+            background: rgba(255, 255, 255, 0.30);
             border-radius: 9999px;
             overflow: hidden;
             cursor: pointer;
         }
+
         .story-bar-fill {
             height: 100%;
             background: #fff;
@@ -164,10 +166,15 @@
             width: 0%;
             transition: none;
         }
-        .story-bar-fill.completed { width: 100%; }
+
+        .story-bar-fill.completed {
+            width: 100%;
+        }
+
         .story-bar-fill.animating {
             transition: width linear;
         }
+
         #story-media-container img,
         #story-media-container video {
             max-height: 85dvh;
@@ -177,6 +184,7 @@
             user-select: none;
             -webkit-user-drag: none;
         }
+
         .story-tap-zone {
             position: absolute;
             top: 0;
@@ -185,6 +193,7 @@
             z-index: 10;
             cursor: pointer;
         }
+
         /* ===== SELECTION CHECKBOXES ===== */
         .media-card-select-ring {
             position: absolute;
@@ -193,8 +202,8 @@
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.6);
-            background: rgba(0,0,0,0.4);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            background: rgba(0, 0, 0, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -202,10 +211,12 @@
             transition: all 0.15s ease;
             cursor: pointer;
         }
+
         .media-card-select-ring.selected {
             background: #ec4899;
             border-color: #ec4899;
         }
+
         .media-card-select-ring.selected::after {
             content: '';
             display: block;
@@ -216,27 +227,52 @@
             border-left: none;
             transform: rotate(45deg) translate(-1px, -1px);
         }
+
         .media-card.selected-for-delete {
             outline: 2px solid #ec4899;
             outline-offset: 2px;
         }
 
         /* ===== MOBILE GLOBAL ===== */
-        html, body { height: 100%; }
+        html,
+        body {
+            height: 100%;
+        }
 
         /* Impede que o iOS adicione zoom ao focar em inputs */
         @media (max-width: 768px) {
-            input, textarea, select { font-size: 16px !important; }
+
+            input,
+            textarea,
+            select {
+                font-size: 16px !important;
+            }
         }
 
         /* Player bar mobile: mostra apenas cover+titulo+play */
         @media (max-width: 640px) {
-            #player-center-controls { display: none !important; }
-            #player-right-controls { display: none !important; }
-            #player-left-info { width: auto !important; flex: 1; min-width: 0; }
-            #player-mobile-play { display: flex !important; }
+            #player-center-controls {
+                display: none !important;
+            }
+
+            #player-right-controls {
+                display: none !important;
+            }
+
+            #player-left-info {
+                width: auto !important;
+                flex: 1;
+                min-width: 0;
+            }
+
+            #player-mobile-play {
+                display: flex !important;
+            }
         }
-        #player-mobile-play { display: none; }
+
+        #player-mobile-play {
+            display: none;
+        }
 
         /* Garante grid 2 colunas no mobile para a galeria */
         @media (max-width: 640px) {
@@ -248,11 +284,17 @@
 
         /* Sidebar e painel direito: oculto no mobile */
         @media (max-width: 768px) {
-            #left-sidebar, #right-panel { display: none !important; }
+
+            #left-sidebar,
+            #right-panel {
+                display: none !important;
+            }
         }
 
         /* Controles da playlist: wrap suave no mobile */
-        #playlist-controls-row { flex-wrap: wrap; }
+        #playlist-controls-row {
+            flex-wrap: wrap;
+        }
 
         /* Stories viewer: preenche tela inteira + safe area */
         #story-viewer {
@@ -437,7 +479,8 @@
                 </div>
 
                 <!-- Controles Principais da Playlist -->
-                <div id="playlist-controls-row" class="flex flex-wrap items-center gap-3 py-4 border-b border-white/10 mb-6">
+                <div id="playlist-controls-row"
+                    class="flex flex-wrap items-center gap-3 py-4 border-b border-white/10 mb-6">
                     <!-- Botão que toca a música do fundo (Audio Player Principal) -->
                     <button onclick="toggleMainAudio()"
                         class="w-14 h-14 bg-pink-500 rounded-full flex items-center justify-center text-black hover:scale-105 hover:bg-pink-400 transition shadow-lg shadow-pink-500/30 shrink-0 global-play-btn">
@@ -448,7 +491,8 @@
 
                     <div class="ml-auto flex items-center gap-2 flex-wrap justify-end">
                         <!-- Botão de apagar selecionados (só visível no modo organizar) -->
-                        <button id="delete-selected-btn" onclick="deleteSelectedMedia()" class="hidden bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-full font-bold text-sm transition flex items-center gap-2 select-none shadow-lg">
+                        <button id="delete-selected-btn" onclick="deleteSelectedMedia()"
+                            class="hidden bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-full font-bold text-sm transition flex items-center gap-2 select-none shadow-lg">
                             <i class="fa-solid fa-trash"></i> <span id="delete-selected-label">Apagar (0)</span>
                         </button>
                         <button id="toggle-delete-mode-btn" onclick="toggleDeleteMode()"
@@ -457,7 +501,8 @@
                         </button>
                         <label
                             class="cursor-pointer bg-transparent border border-pink-500 text-pink-400 hover:bg-pink-500 hover:text-white px-4 py-2 rounded-full font-bold text-sm transition flex items-center gap-2 group select-none">
-                            <i class="fa-solid fa-plus group-hover:rotate-90 transition-transform"></i> <span class="hidden sm:inline">Adicionar</span><span class="sm:hidden">Foto</span>
+                            <i class="fa-solid fa-plus group-hover:rotate-90 transition-transform"></i> <span
+                                class="hidden sm:inline">Adicionar</span><span class="sm:hidden">Foto</span>
                             <input type="file" id="media-upload" class="hidden" accept="image/*,video/*" multiple
                                 onchange="handleFileUpload(event)">
                         </label>
@@ -550,7 +595,8 @@
                 class="w-11 h-11 sm:w-14 sm:h-14 rounded object-cover shrink-0" alt="Capa">
             <div class="overflow-hidden min-w-0">
                 <a href="#" id="player-title"
-                    class="text-xs sm:text-sm font-semibold text-white hover:underline hover:text-pink-400 transition truncate block">O MAIOR HIT</a>
+                    class="text-xs sm:text-sm font-semibold text-white hover:underline hover:text-pink-400 transition truncate block">O
+                    MAIOR HIT</a>
                 <div class="text-[10px] sm:text-xs text-zinc-400 truncate">Feat. Você e Eu</div>
             </div>
             <i class="fa-solid fa-heart text-pink-500 heart-float ml-1 shrink-0 hidden sm:block"></i>
@@ -598,7 +644,8 @@
         </div>
 
         <!-- Direita: volume (desktop) -->
-        <div id="player-right-controls" class="flex items-center justify-end gap-3 md:gap-4 w-[30%] min-w-[120px] text-zinc-400">
+        <div id="player-right-controls"
+            class="flex items-center justify-end gap-3 md:gap-4 w-[30%] min-w-[120px] text-zinc-400">
             <button class="hover:text-pink-400 transition hover:scale-110 hidden md:block" title="Declaração Mágica"
                 onclick="openMagicModal()"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
             <i class="fa-solid fa-volume-high hover:text-white transition cursor-pointer" onclick="toggleMute()"></i>
@@ -613,7 +660,8 @@
     <audio id="main-audio-element" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
 
     <!-- ===== MODAL: VISUALIZADOR DE STORIES ===== -->
-    <div id="story-viewer" class="fixed inset-0 z-[90] hidden flex-col items-stretch justify-between select-none" style="background:#000; height:100dvh;">
+    <div id="story-viewer" class="fixed inset-0 z-[90] hidden flex-col items-stretch justify-between select-none"
+        style="background:#000; height:100dvh;">
 
         <!-- Barra de Progresso Superior + Header -->
         <div class="flex-shrink-0 px-3 sm:px-4" style="padding-top: max(env(safe-area-inset-top, 0px), 12px);">
@@ -624,13 +672,15 @@
             <!-- Header com capa + nome -->
             <div class="flex items-center justify-between py-2">
                 <div class="flex items-center gap-2">
-                    <img id="story-header-cover" src="" class="w-8 h-8 rounded-full object-cover ring-2 ring-pink-500" alt="">
+                    <img id="story-header-cover" src="" class="w-8 h-8 rounded-full object-cover ring-2 ring-pink-500"
+                        alt="">
                     <div>
                         <p id="story-header-title" class="text-white font-bold text-sm leading-none"></p>
                         <p id="story-header-count" class="text-white/60 text-xs leading-none mt-0.5"></p>
                     </div>
                 </div>
-                <button onclick="closeStoryViewer()" class="w-10 h-10 rounded-full bg-white/10 active:bg-white/30 flex items-center justify-center text-white transition touch-manipulation">
+                <button onclick="closeStoryViewer()"
+                    class="w-10 h-10 rounded-full bg-white/10 active:bg-white/30 flex items-center justify-center text-white transition touch-manipulation">
                     <i class="fa-solid fa-xmark fa-lg"></i>
                 </button>
             </div>
@@ -644,15 +694,18 @@
             <div class="story-tap-zone right-0" id="story-right-zone"></div>
 
             <!-- Container da mídia atual -->
-            <div id="story-media-container" class="relative flex items-center justify-center w-full h-full px-2 sm:px-8">
+            <div id="story-media-container"
+                class="relative flex items-center justify-center w-full h-full px-2 sm:px-8">
                 <!-- <img> ou <video> injetados via JS -->
             </div>
 
             <!-- Setas laterais (visíveis apenas em desktop) -->
-            <button onclick="prevStory()" id="story-prev-arrow" class="absolute left-2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 hidden md:flex items-center justify-center text-white transition">
+            <button onclick="prevStory()" id="story-prev-arrow"
+                class="absolute left-2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 hidden md:flex items-center justify-center text-white transition">
                 <i class="fa-solid fa-chevron-left"></i>
             </button>
-            <button onclick="nextStory()" id="story-next-arrow" class="absolute right-2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 hidden md:flex items-center justify-center text-white transition">
+            <button onclick="nextStory()" id="story-next-arrow"
+                class="absolute right-2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 hidden md:flex items-center justify-center text-white transition">
                 <i class="fa-solid fa-chevron-right"></i>
             </button>
         </div>
@@ -816,8 +869,7 @@
         const START_DATE = "2022-12-12";
         const DEFAULT_MUSIC_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
 
-        // Gerenciamento da API Key
-        let apiKey = "AQ.Ab8RN6I_hHDkvKPaTvIDlsKe4LggR4ArgRdoFHMAJzQozrSvYQ";
+
 
         // --- 1. LÓGICA DO LEITOR DE ÁUDIO GLOBAL (A BARRA INFERIOR) ---
         const audioEl = document.getElementById('main-audio-element');
@@ -1640,7 +1692,7 @@
                 const card = document.createElement('div');
                 card.className = "media-card relative aspect-square rounded-md overflow-hidden bg-zinc-800 group border border-transparent hover:border-pink-500/50 transition fade-in" + (isSelected ? ' selected-for-delete' : '');
                 card.style.animationDelay = `${idx * 0.05}s`;
-                
+
                 // Mídia (imagem ou vídeo)
                 const mediaContent = media.isVideo ?
                     `<video src="${media.url}" class="w-full h-full object-cover" loop muted autoplay playsinline></video>` :
@@ -1684,7 +1736,7 @@
                     </div>`;
                     card.appendChild(hintIcon);
                 }
-                
+
                 grid.appendChild(card);
             });
 
@@ -1910,7 +1962,7 @@
             storyTimer = setTimeout(() => nextStory(), remaining);
             // Resume video if present
             const vid = document.querySelector('#story-media-container video');
-            if (vid) vid.play().catch(() => {});
+            if (vid) vid.play().catch(() => { });
         }
 
         function clearStoryTimer() {
