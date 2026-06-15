@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máquina do Tempo - Lovify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at center, #110c22 0%, #05040a 100%);
+            overflow: hidden;
+        }
+        /* Container 3D */
+        .carousel-3d-container {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+        /* Card base com transições suaves e perspectiva */
+        .carousel-card {
+            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.6s ease;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+        }
+        /* Painel Glassmorphism */
+        .glass-panel {
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+        }
+        /* Glow para elementos ativos */
+        .active-glow-blue {
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+            border-color: rgba(59, 130, 246, 0.6);
+        }
+        .active-glow-pink {
+            box-shadow: 0 0 30px rgba(236, 72, 153, 0.4);
+            border-color: rgba(236, 72, 153, 0.6);
+        }
+    </style>
+</head>
+<body class="text-white w-screen h-screen flex flex-col justify-between relative">
+
+    <!-- Cabeçalho Fixo -->
+    <header class="w-full p-6 flex justify-between items-center z-40 bg-gradient-to-b from-black/80 to-transparent absolute top-0 left-0">
+        <a href="lovify.html" class="flex items-center gap-2 text-zinc-400 hover:text-blue-400 font-bold transition hover:scale-105">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Voltar para Lovify</span>
+        </a>
+        <div class="text-blue-400 font-extrabold text-xl tracking-wider uppercase flex items-center gap-2">
+            <i class="fa-solid fa-hourglass-half animate-spin" style="animation-duration: 8s;"></i>
+            <span>Máquina do Tempo</span>
+        </div>
+    </header>
+
+    <!-- ÁREA CENTRAL: Carrossel 3D -->
+    <main class="flex-1 flex flex-col items-center justify-center relative z-20 px-4 mt-16 pb-20">
+        
+        <!-- Marcador Temporal Superior -->
+        <div class="mb-8 text-center" id="timeline-header">
+            <span class="text-xs font-bold tracking-widest text-blue-400 uppercase bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20" id="time-badge">PRESENTE</span>
+            <h1 class="text-2xl md:text-3xl font-extrabold mt-3 tracking-tight" id="time-title">Linha do Tempo de Nós Dois</h1>
+        </div>
+
+        <!-- Container do Carrossel -->
+        <div class="w-full max-w-5xl h-96 md:h-[450px] relative carousel-3d-container flex items-center justify-center" id="carousel-container">
+            
+            <!-- Card 1: Passado (Primeira Conversa) -->
+            <div class="carousel-card glass-panel w-72 md:w-80 h-[380px] md:h-[420px] rounded-2xl p-6 absolute flex flex-col justify-between cursor-pointer select-none" data-index="0">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center text-xs text-blue-400 font-bold tracking-wider">
+                        <span>PASSADO</span>
+                        <span>12/12/2022</span>
+                    </div>
+                    <h3 class="text-lg font-bold">Nossa Primeira Mensagem</h3>
+                    
+                    <!-- Balão de Chat Simulado -->
+                    <div class="bg-zinc-900/80 rounded-xl p-3 border border-zinc-800 space-y-2 mt-4 text-xs">
+                        <div class="bg-blue-600 text-white p-2 rounded-lg rounded-tl-none max-w-[85%]">
+                            "Oi! Tudo bem? Reparei que você também curte aquela banda..."
+                        </div>
+                        <div class="bg-zinc-800 text-zinc-300 p-2 rounded-lg rounded-tr-none max-w-[85%] ml-auto text-right">
+                            "Oi! Tudo ótimo! Sim, sou viciado(a) neles! Hahaha..."
+                        </div>
+                    </div>
+                </div>
+                <p class="text-xs md:text-sm text-zinc-400 leading-relaxed italic mt-4 border-t border-zinc-800 pt-4">
+                    E foi com esse papo bobo sobre música que tudo começou. Quem diria que aquele 'Oi' mudaria a nossa história para sempre?
+                </p>
+            </div>
+
+            <!-- Card 2: Passado (Primeiro Encontro) -->
+            <div class="carousel-card glass-panel w-72 md:w-80 h-[380px] md:h-[420px] rounded-2xl p-6 absolute flex flex-col justify-between cursor-pointer select-none" data-index="1">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center text-xs text-blue-400 font-bold tracking-wider">
+                        <span>PASSADO</span>
+                        <span>O Primeiro Encontro</span>
+                    </div>
+                    <h3 class="text-lg font-bold">A Primeira Vez Juntos</h3>
+                    <div class="relative w-full aspect-video rounded-lg overflow-hidden bg-zinc-950 border border-zinc-800/80">
+                        <img src="assets/images/encontro.jpg" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1518199266791-5375a83190b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'" class="w-full h-full object-cover" alt="Primeiro Encontro">
+                    </div>
+                </div>
+                <p class="text-xs md:text-sm text-zinc-400 leading-relaxed italic mt-4 border-t border-zinc-800 pt-4">
+                    O frio na barriga, o sorriso tímido ao longe e a conversa fluindo fácil. Aquele abraço no final me deixou com a certeza doce de querer te abraçar para sempre.
+                </p>
+            </div>
+
+            <!-- Card 3: Presente (Hoje) -->
+            <div class="carousel-card glass-panel w-72 md:w-80 h-[380px] md:h-[420px] rounded-2xl p-6 absolute flex flex-col justify-between cursor-pointer select-none active-glow-blue" data-index="2">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center text-xs text-pink-500 font-bold tracking-wider">
+                        <span>PRESENTE</span>
+                        <span id="current-date-badge">HOJE</span>
+                    </div>
+                    <h3 class="text-xl font-black text-pink-400">Cultivando o Nosso Amor</h3>
+                    <div class="text-center py-6">
+                        <i class="fa-solid fa-heart-pulse text-5xl text-pink-500 animate-pulse"></i>
+                        <h4 class="text-2xl font-black mt-4" id="days-counter-tm">--- DIAS</h4>
+                        <p class="text-xs text-zinc-400 mt-1 uppercase tracking-widest font-semibold">de muito companheirismo</p>
+                    </div>
+                </div>
+                <p class="text-xs md:text-sm text-zinc-300 leading-relaxed italic border-t border-zinc-800 pt-4 text-center">
+                    Cada risada, cada desafio superado, cada café partilhado... o presente é o meu lugar favorito do universo porque você está nele.
+                </p>
+            </div>
+
+            <!-- Card 4: Futuro (Viagem) -->
+            <div class="carousel-card glass-panel w-72 md:w-80 h-[380px] md:h-[420px] rounded-2xl p-6 absolute flex flex-col justify-between cursor-pointer select-none" data-index="3">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center text-xs text-purple-400 font-bold tracking-wider">
+                        <span>FUTURO</span>
+                        <span>Próximos Passos</span>
+                    </div>
+                    <h3 class="text-lg font-bold">Nossa Próxima Aventura</h3>
+                    <div class="relative w-full aspect-video rounded-lg overflow-hidden bg-zinc-950 border border-zinc-800/80">
+                        <img src="assets/images/futura_viagem.jpg" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'" class="w-full h-full object-cover" alt="Viagem Futura">
+                    </div>
+                </div>
+                <p class="text-xs md:text-sm text-zinc-400 leading-relaxed italic mt-4 border-t border-zinc-800 pt-4">
+                    Colocar o pé na estrada, ver o mar de mãos dadas, comer coisas diferentes e criar álbuns de fotos novinhos. Mal posso esperar para colecionar mais passaportes e carinhos com você.
+                </p>
+            </div>
+
+            <!-- Card 5: Futuro (Construção) -->
+            <div class="carousel-card glass-panel w-72 md:w-80 h-[380px] md:h-[420px] rounded-2xl p-6 absolute flex flex-col justify-between cursor-pointer select-none" data-index="4">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center text-xs text-purple-400 font-bold tracking-wider">
+                        <span>FUTURO</span>
+                        <span>Nossos Sonhos</span>
+                    </div>
+                    <h3 class="text-lg font-bold">Nosso Lar e Família</h3>
+                    <div class="bg-zinc-900/80 rounded-xl p-4 border border-zinc-800 space-y-3 mt-2 text-xs">
+                        <div class="flex items-center gap-3 text-zinc-300">
+                            <i class="fa-solid fa-house-chimney text-purple-400"></i>
+                            <span>Nossa casinha aconchegante</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-zinc-300">
+                            <i class="fa-solid fa-paw text-purple-400"></i>
+                            <span>Um bichinho de estimação travesso</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-zinc-300">
+                            <i class="fa-solid fa-mug-hot text-purple-400"></i>
+                            <span>Muitas manhãs preguiçosas juntos</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-xs md:text-sm text-zinc-400 leading-relaxed italic mt-4 border-t border-zinc-800 pt-4">
+                    Olhar para a frente e te enxergar velhinho(a) ao meu lado, rindo das mesmas piadas bobas. Meu plano para o futuro é simples: continuar sendo seu.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Controles Inferiores (Setas) -->
+        <div class="flex items-center gap-6 mt-6">
+            <button onclick="prevCard()" class="w-12 h-12 rounded-full glass-panel hover:text-blue-400 hover:scale-105 active:scale-95 transition flex items-center justify-center shadow-lg shadow-blue-500/10">
+                <i class="fa-solid fa-chevron-left fa-lg"></i>
+            </button>
+            <span class="text-xs text-zinc-500 font-bold tracking-widest uppercase">Arraste ou clique para navegar</span>
+            <button onclick="nextCard()" class="w-12 h-12 rounded-full glass-panel hover:text-blue-400 hover:scale-105 active:scale-95 transition flex items-center justify-center shadow-lg shadow-blue-500/10">
+                <i class="fa-solid fa-chevron-right fa-lg"></i>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Rodapé Poético -->
+    <footer class="w-full p-6 text-center text-xs text-zinc-500 relative z-30">
+        Lovify Time Machine • Criado com todo o amor do mundo.
+    </footer>
+
+    <script>
+        // Data do início do relacionamento para cálculo
+        const START_DATE = "2022-12-12";
+
+        // Gerenciamento do Estado do Carrossel
+        let activeIndex = 2; // Começa no Presente (Card index 2)
+        const cards = document.querySelectorAll('.carousel-card');
+        const totalCards = cards.length;
+
+        // Atualizar data de hoje no badge do presente
+        const today = new Date();
+        document.getElementById('current-date-badge').innerText = today.toLocaleDateString('pt-BR');
+
+        // Calcular dias do namoro
+        const startDate = new Date(START_DATE);
+        const timeDiff = Math.abs(today - startDate);
+        const diffDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        document.getElementById('days-counter-tm').innerText = `${diffDays.toLocaleString('pt-BR')} DIAS`;
+
+        // Informações adicionais do cabeçalho da linha do tempo baseado no índice ativo
+        const infoTimeline = [
+            { badge: "PASSADO", title: "Como tudo começou...", colorClass: "text-blue-400", borderGlowClass: "active-glow-blue", bgGlow: "rgba(59, 130, 246, 0.1)" },
+            { badge: "PASSADO", title: "Nossa primeira sintonia presencial", colorClass: "text-blue-400", borderGlowClass: "active-glow-blue", bgGlow: "rgba(59, 130, 246, 0.1)" },
+            { badge: "PRESENTE", title: "Nossos melhores dias são agora", colorClass: "text-pink-500", borderGlowClass: "active-glow-pink", bgGlow: "rgba(236, 72, 153, 0.1)" },
+            { badge: "FUTURO", title: "Sonhos que vamos realizar", colorClass: "text-purple-400", borderGlowClass: "active-glow-blue", bgGlow: "rgba(147, 51, 234, 0.1)" },
+            { badge: "FUTURO", title: "Nosso amanhã para sempre", colorClass: "text-purple-400", borderGlowClass: "active-glow-blue", bgGlow: "rgba(147, 51, 234, 0.1)" }
+        ];
+
+        // Atualiza a visualização do carrossel 3D
+        function updateCarousel() {
+            // Atualizar cabeçalho da timeline
+            const info = infoTimeline[activeIndex];
+            const badgeEl = document.getElementById('time-badge');
+            const titleEl = document.getElementById('time-title');
+            
+            badgeEl.innerText = info.badge;
+            // Remover classes de cores antigas e colocar a nova
+            badgeEl.className = `text-xs font-bold tracking-widest uppercase bg-zinc-800 px-3 py-1.5 rounded-full border ${info.colorClass}`;
+            titleEl.innerText = info.title;
+
+            // Transição 3D nos Cards
+            cards.forEach((card, i) => {
+                const diff = i - activeIndex;
+                card.classList.remove('active-glow-blue', 'active-glow-pink');
+
+                if (diff === 0) {
+                    // Card Ativo Central
+                    card.style.transform = `translateX(0) scale(1) rotateY(0) translateZ(50px)`;
+                    card.style.zIndex = 10;
+                    card.style.opacity = 1;
+                    card.classList.add(info.borderGlowClass);
+                } else if (diff < 0) {
+                    // Cards da esquerda (Passado)
+                    const factor = Math.abs(diff);
+                    card.style.transform = `translateX(${-160 * factor}px) scale(${1 - factor * 0.12}) rotateY(38deg) translateZ(-40px)`;
+                    card.style.zIndex = 10 - factor;
+                    card.style.opacity = Math.max(0, 1 - factor * 0.35);
+                } else {
+                    // Cards da direita (Futuro)
+                    const factor = Math.abs(diff);
+                    card.style.transform = `translateX(${160 * factor}px) scale(${1 - factor * 0.12}) rotateY(-38deg) translateZ(-40px)`;
+                    card.style.zIndex = 10 - factor;
+                    card.style.opacity = Math.max(0, 1 - factor * 0.35);
+                }
+            });
+        }
+
+        // Navegação
+        function nextCard() {
+            if (activeIndex < totalCards - 1) {
+                activeIndex++;
+                updateCarousel();
+            }
+        }
+
+        function prevCard() {
+            if (activeIndex > 0) {
+                activeIndex--;
+                updateCarousel();
+            }
+        }
+
+        // Permitir clique direto no card lateral para trazer ele para o foco
+        cards.forEach((card) => {
+            card.addEventListener('click', () => {
+                const index = parseInt(card.getAttribute('data-index'));
+                if (index !== activeIndex) {
+                    activeIndex = index;
+                    updateCarousel();
+                }
+            });
+        });
+
+        // Suporte para Arrasto (Drag / Swipe) com mouse ou touch
+        let startX = 0;
+        let isDragging = false;
+        const container = document.getElementById('carousel-container');
+
+        container.addEventListener('mousedown', (e) => {
+            startX = e.clientX;
+            isDragging = true;
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        container.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const currentX = e.clientX;
+            const diffX = currentX - startX;
+            
+            // Sensibilidade do drag
+            if (diffX > 80) {
+                prevCard();
+                isDragging = false;
+            } else if (diffX < -80) {
+                nextCard();
+                isDragging = false;
+            }
+        });
+
+        // Swipe touch
+        container.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+        });
+
+        container.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        container.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const currentX = e.touches[0].clientX;
+            const diffX = currentX - startX;
+
+            if (diffX > 60) {
+                prevCard();
+                isDragging = false;
+            } else if (diffX < -60) {
+                nextCard();
+                isDragging = false;
+            }
+        });
+
+        // Inicializar Carrossel
+        updateCarousel();
+    </script>
+</body>
+</html>

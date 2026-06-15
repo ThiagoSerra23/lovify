@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Flor Que Nasce - Lovify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #000;
+        }
+        .serif-text {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Efeito de fade para os textos poéticos */
+        .poem-step {
+            opacity: 0.1;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+        }
+        .poem-step.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="text-white overflow-x-hidden min-h-[400vh]">
+
+    <!-- Cabeçalho Fixo -->
+    <header class="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-50 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm">
+        <a href="lovify.html" class="flex items-center gap-2 text-zinc-400 hover:text-pink-500 font-bold transition hover:scale-105">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Voltar para Lovify</span>
+        </a>
+        <div class="text-pink-500 font-extrabold text-xl tracking-wider uppercase">
+            <i class="fa-solid fa-seedling mr-2"></i>A Flor Que Nasce
+        </div>
+    </header>
+
+    <!-- Indicador de Scroll -->
+    <div class="fixed bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-40 animate-bounce text-zinc-500 pointer-events-none" id="scroll-prompt">
+        <span class="text-xs font-semibold tracking-widest uppercase">Role para baixo para florescer</span>
+        <i class="fa-solid fa-chevron-down"></i>
+    </div>
+
+    <!-- Layout Dividido Principal -->
+    <div class="flex flex-col md:flex-row min-h-screen">
+        
+        <!-- LADO ESQUERDO: Canvas Fixo para Desenho da Flor -->
+        <div class="w-full md:w-1/2 h-96 md:h-screen fixed md:top-0 md:left-0 top-16 z-20 flex items-center justify-center p-4">
+            <div class="relative w-full h-full max-w-lg max-h-lg flex items-center justify-center">
+                <!-- Efeito de brilho de fundo -->
+                <div class="absolute w-72 h-72 rounded-full bg-pink-500/10 blur-[80px] pointer-events-none transition-all duration-1000" id="bg-glow"></div>
+                <canvas id="flower-canvas" class="w-full h-full drop-shadow-[0_0_30px_rgba(236,72,153,0.3)]"></canvas>
+            </div>
+        </div>
+
+        <!-- LADO DIREITO: Espaço Scrollable para as mensagens poéticas -->
+        <div class="w-full md:w-1/2 ml-auto p-8 md:p-24 relative z-30 pt-96 md:pt-0">
+            <!-- Container das seções de texto poético -->
+            <div class="space-y-[60vh] pb-[40vh]">
+                
+                <!-- Passo 1: Início/Semente -->
+                <section class="poem-step min-h-[40vh] flex flex-col justify-center" data-step="0">
+                    <span class="text-pink-500 font-bold tracking-widest uppercase text-sm mb-2">Fase 1: A Semente</span>
+                    <h2 class="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight mb-4">No início, era apenas um olhar.</h2>
+                    <p class="serif-text text-lg md:text-xl text-zinc-400 italic leading-relaxed">
+                        Tudo começou pequeno, quase imperceptível. Uma semente de carinho plantada no silêncio do cotidiano, alimentada por conversas bobas, risadas espontâneas e o desejo secreto de estarmos sempre perto.
+                    </p>
+                </section>
+
+                <!-- Passo 2: O Crescimento -->
+                <section class="poem-step min-h-[40vh] flex flex-col justify-center" data-step="1">
+                    <span class="text-pink-500 font-bold tracking-widest uppercase text-sm mb-2">Fase 2: O Enraizamento</span>
+                    <h2 class="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight mb-4">Crescemos juntos, dia após dia.</h2>
+                    <p class="serif-text text-lg md:text-xl text-zinc-400 italic leading-relaxed">
+                        Com paciência e afeto, as raízes se aprofundaram no solo da confiança. O caule ergueu-se forte diante do vento. Cada detalhe seu se transformou em sustento para o meu sorriso. Nosso amor encontrou direção.
+                    </p>
+                </section>
+
+                <!-- Passo 3: O Desabrochar -->
+                <section class="poem-step min-h-[40vh] flex flex-col justify-center" data-step="2">
+                    <span class="text-pink-500 font-bold tracking-widest uppercase text-sm mb-2">Fase 3: O Desabrochar</span>
+                    <h2 class="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight mb-4">Revelando nossas cores mais lindas.</h2>
+                    <p class="serif-text text-lg md:text-xl text-zinc-400 italic leading-relaxed">
+                        Pétala por pétala, sem pressa, a flor se abriu. Ao seu lado, aprendi a beleza de se expor, de amar sem reservas e de colorir até os dias mais cinzentos com o rosa vibrante da nossa cumplicidade.
+                    </p>
+                </section>
+
+                <!-- Passo 4: O Brilho Eterno -->
+                <section class="poem-step min-h-[40vh] flex flex-col justify-center animate-pulse" data-step="3">
+                    <span class="text-pink-500 font-bold tracking-widest uppercase text-sm mb-2">Fase Final: O Brilho Eterno</span>
+                    <h2 class="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight mb-4 text-pink-400">Um amor que nunca murcha.</h2>
+                    <p class="serif-text text-lg md:text-xl text-zinc-300 italic leading-relaxed">
+                        Hoje, a flor está completa, brilhando no escuro da imensidão. Um lembrete vivo de que, não importa a estação, o que temos é único, cultivado com ternura e destinado a durar para sempre.
+                    </p>
+                    <div class="mt-8">
+                        <a href="lovify.html" class="inline-flex items-center gap-3 bg-gradient-to-r from-pink-500 to-purple-600 px-6 py-3 rounded-full font-bold text-white hover:scale-105 transition shadow-[0_0_15px_rgba(236,72,153,0.4)]">
+                            <i class="fa-solid fa-heart"></i> Explorar Outros Mundos
+                        </a>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Script de Animação e Canvas -->
+    <script>
+        const canvas = document.getElementById('flower-canvas');
+        const ctx = canvas.getContext('2d');
+        const bgGlow = document.getElementById('bg-glow');
+        const scrollPrompt = document.getElementById('scroll-prompt');
+
+        // Ajustar tamanho do canvas
+        function resizeCanvas() {
+            const size = Math.min(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight);
+            canvas.width = size * 2; // Para telas de alta densidade
+            canvas.height = size * 2;
+            canvas.style.width = size + 'px';
+            canvas.style.height = size + 'px';
+            ctx.scale(2, 2);
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Partículas flutuantes (pólen)
+        const particles = [];
+        for (let i = 0; i < 40; i++) {
+            particles.push({
+                x: Math.random(),
+                y: Math.random() + 0.2,
+                size: Math.random() * 2 + 1,
+                speedY: Math.random() * 0.001 + 0.0005,
+                angle: Math.random() * Math.PI * 2,
+                speedX: Math.random() * 0.001 - 0.0005
+            });
+        }
+
+        // Variável de controle do Scroll
+        let scrollFraction = 0;
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            scrollFraction = Math.max(0, Math.min(1, scrollTop / docHeight));
+
+            // Esconder indicador de scroll
+            if (scrollFraction > 0.05) {
+                scrollPrompt.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+            } else {
+                scrollPrompt.classList.remove('opacity-0');
+            }
+
+            // Atualizar cor e intensidade do glow de fundo
+            const glowOpacity = 0.05 + (scrollFraction * 0.2);
+            bgGlow.style.backgroundColor = `rgba(236, 72, 153, ${glowOpacity})`;
+            bgGlow.style.transform = `translate(-50%, -50%) scale(${1 + scrollFraction * 0.5})`;
+
+            // Ativar passos de poema baseados no scroll
+            const steps = document.querySelectorAll('.poem-step');
+            steps.forEach((step, idx) => {
+                const triggerPoint = idx * 0.28;
+                if (scrollFraction >= triggerPoint) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        });
+
+        // Loop de Renderização
+        function draw(time) {
+            const size = canvas.width / 2;
+            ctx.clearRect(0, 0, size, size);
+
+            const centerX = size / 2;
+            const centerY = size / 2 + 30;
+
+            // 1. DESENHAR O CAULE (Surgindo de 0.0 a 0.35 do scroll)
+            const stemProgress = Math.min(1, scrollFraction / 0.35);
+            if (stemProgress > 0) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#22c55e'; // Verde brilhante
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+                ctx.shadowColor = '#22c55e';
+                ctx.shadowBlur = 10;
+
+                // Curva do caule
+                ctx.moveTo(centerX, size - 20);
+                const targetY = size - 20 - (180 * stemProgress);
+                ctx.quadraticCurveTo(centerX - 30 * Math.sin(stemProgress * Math.PI), size - 100, centerX, targetY);
+                ctx.stroke();
+
+                // Desenhar Folhas (Surgindo de 0.2 a 0.45 do scroll)
+                const leafProgress = Math.max(0, Math.min(1, (scrollFraction - 0.2) / 0.25));
+                if (leafProgress > 0) {
+                    // Folha 1 (Esquerda)
+                    ctx.save();
+                    ctx.translate(centerX - 12, size - 90);
+                    ctx.rotate(-0.5 * Math.PI * leafProgress);
+                    ctx.fillStyle = '#16a34a';
+                    ctx.shadowColor = '#22c55e';
+                    ctx.shadowBlur = 8;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 15 * leafProgress, 6 * leafProgress, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+
+                    // Folha 2 (Direita)
+                    ctx.save();
+                    ctx.translate(centerX + 10, size - 130);
+                    ctx.rotate(0.3 * Math.PI * leafProgress);
+                    ctx.fillStyle = '#16a34a';
+                    ctx.shadowColor = '#22c55e';
+                    ctx.shadowBlur = 8;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 12 * leafProgress, 5 * leafProgress, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            // 2. DESENHAR A ROSA (Desabrochando de 0.35 a 1.0 do scroll)
+            const bloomProgress = Math.max(0, Math.min(1, (scrollFraction - 0.35) / 0.65));
+            const roseY = size - 200;
+
+            if (bloomProgress > 0) {
+                ctx.shadowColor = '#ec4899'; // Rosa neon
+                ctx.shadowBlur = 15 + bloomProgress * 10;
+
+                // Desenhar pétalas externas primeiro, depois as internas
+                const totalLayers = 6;
+                const petalsPerLayer = [6, 5, 5, 4, 3, 2];
+                const layerSizes = [45, 35, 27, 20, 12, 6];
+
+                for (let layer = 0; layer < totalLayers; layer++) {
+                    // Cada camada interna surge ligeiramente após a externa
+                    const layerDelay = layer * 0.12;
+                    const layerProgress = Math.max(0, Math.min(1, (bloomProgress - layerDelay) / (1 - layerDelay)));
+                    
+                    if (layerProgress > 0) {
+                        const numPetals = petalsPerLayer[layer];
+                        const maxRadius = layerSizes[layer] * layerProgress;
+                        
+                        ctx.fillStyle = getLayerColor(layer, bloomProgress);
+
+                        for (let p = 0; p < numPetals; p++) {
+                            const angleOffset = (p / numPetals) * Math.PI * 2 + (layer * 0.4) + (time * 0.0002 * (layer % 2 === 0 ? 1 : -1));
+                            
+                            ctx.save();
+                            ctx.translate(centerX, roseY);
+                            ctx.rotate(angleOffset);
+
+                            ctx.beginPath();
+                            // Forma da pétala usando curvas Bézier para simular pétalas sobrepostas tridimensionais
+                            ctx.moveTo(0, 0);
+                            ctx.bezierCurveTo(
+                                -maxRadius * 0.8, -maxRadius * 0.3, 
+                                -maxRadius * 0.5, -maxRadius * 1.2, 
+                                0, -maxRadius * 1.2
+                            );
+                            ctx.bezierCurveTo(
+                                maxRadius * 0.5, -maxRadius * 1.2, 
+                                maxRadius * 0.8, -maxRadius * 0.3, 
+                                0, 0
+                            );
+                            ctx.fill();
+                            ctx.restore();
+                        }
+                    }
+                }
+            }
+
+            // Helper para calcular cores neon com gradiente de roxo para rosa dependendo da camada
+            function getLayerColor(layer, progress) {
+                // Camadas mais profundas (centro) são mais quentes (rosa brilhante), as externas são mais roxas
+                const hue = 320 + (layer * 12); 
+                const lightness = 40 + (layer * 4) + (progress * 10);
+                return `hsla(${hue}, 90%, ${lightness}%, ${0.5 + progress * 0.3})`;
+            }
+
+            // 3. DESENHAR PARTÍCULAS DE PÓLEN FLUTUANTES
+            ctx.shadowBlur = 5;
+            ctx.shadowColor = '#f472b6';
+            
+            particles.forEach(p => {
+                // Atualizar posição do pólen com velocidade baseada no scroll e flutuação temporal
+                p.y -= p.speedY + (scrollFraction * 0.002);
+                p.x += Math.sin(time * 0.003 + p.angle) * 0.0005 + p.speedX;
+                
+                // Reposicionar se sair da tela
+                if (p.y < 0.1) p.y = 1.0;
+                if (p.x < 0) p.x = 1.0;
+                if (p.x > 1) p.x = 0;
+
+                const px = p.x * size;
+                const py = p.y * size;
+
+                // Brilho varia suavemente com o tempo
+                const alpha = (0.2 + 0.6 * Math.sin(time * 0.002 + p.angle)) * scrollFraction;
+                ctx.fillStyle = `rgba(244, 114, 182, ${alpha})`;
+                
+                ctx.beginPath();
+                ctx.arc(px, py, p.size * (0.8 + scrollFraction * 0.4), 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        // Iniciar loop
+        requestAnimationFrame(draw);
+
+        // Ativar passo inicial de forma suave
+        setTimeout(() => {
+            const firstStep = document.querySelector('.poem-step');
+            if (firstStep && scrollFraction < 0.05) {
+                firstStep.classList.add('active');
+            }
+        }, 300);
+    </script>
+</body>
+</html>

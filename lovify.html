@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lovify - O Maior Hit da Minha Vida</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Estilos personalizados para scrollbar e animações */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ec4899;
+        }
+
+        .heart-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: translateY(-20px) scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(0px) scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        .neon-glow:hover {
+            box-shadow: 0 0 15px #ec4899;
+            transition: all 0.3s ease;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #ec4899;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Canvas de corações caindo */
+        #hearts-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-animated-gradient {
+            background: transparent;
+        }
+
+        .lyric-scroll {
+            mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Animações das ondas de música */
+        @keyframes wave-height {
+
+            0%,
+            100% {
+                height: 4px;
+            }
+
+            50% {
+                height: 20px;
+            }
+        }
+
+        .wave-bar {
+            width: 3px;
+            background-color: #ec4899;
+            border-radius: 9999px;
+            height: 4px;
+            transition: height 0.3s ease;
+        }
+
+        .playing .wave-bar-1 {
+            animation: wave-height 1.0s ease-in-out infinite;
+        }
+
+        .playing .wave-bar-2 {
+            animation: wave-height 0.8s ease-in-out infinite 0.15s;
+        }
+
+        .playing .wave-bar-3 {
+            animation: wave-height 1.2s ease-in-out infinite 0.3s;
+        }
+
+        .playing .wave-bar-4 {
+            animation: wave-height 0.9s ease-in-out infinite 0.05s;
+        }
+
+        /* ===== STORIES VIEWER ===== */
+        #story-viewer {
+            background: #000;
+            touch-action: none;
+        }
+        .story-bar-track {
+            flex: 1;
+            height: 3px;
+            background: rgba(255,255,255,0.30);
+            border-radius: 9999px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .story-bar-fill {
+            height: 100%;
+            background: #fff;
+            border-radius: 9999px;
+            width: 0%;
+            transition: none;
+        }
+        .story-bar-fill.completed { width: 100%; }
+        .story-bar-fill.animating {
+            transition: width linear;
+        }
+        #story-media-container img,
+        #story-media-container video {
+            max-height: 85dvh;
+            max-width: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        .story-tap-zone {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 35%;
+            z-index: 10;
+            cursor: pointer;
+        }
+        /* ===== SELECTION CHECKBOXES ===== */
+        .media-card-select-ring {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.6);
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 30;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+        .media-card-select-ring.selected {
+            background: #ec4899;
+            border-color: #ec4899;
+        }
+        .media-card-select-ring.selected::after {
+            content: '';
+            display: block;
+            width: 5px;
+            height: 9px;
+            border: 2px solid white;
+            border-top: none;
+            border-left: none;
+            transform: rotate(45deg) translate(-1px, -1px);
+        }
+        .media-card.selected-for-delete {
+            outline: 2px solid #ec4899;
+            outline-offset: 2px;
+        }
+
+        /* ===== MOBILE GLOBAL ===== */
+        html, body { height: 100%; }
+
+        /* Impede que o iOS adicione zoom ao focar em inputs */
+        @media (max-width: 768px) {
+            input, textarea, select { font-size: 16px !important; }
+        }
+
+        /* Player bar mobile: mostra apenas cover+titulo+play */
+        @media (max-width: 640px) {
+            #player-center-controls { display: none !important; }
+            #player-right-controls { display: none !important; }
+            #player-left-info { width: auto !important; flex: 1; min-width: 0; }
+            #player-mobile-play { display: flex !important; }
+        }
+        #player-mobile-play { display: none; }
+
+        /* Garante grid 2 colunas no mobile para a galeria */
+        @media (max-width: 640px) {
+            #playlist-media-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 8px !important;
+            }
+        }
+
+        /* Sidebar e painel direito: oculto no mobile */
+        @media (max-width: 768px) {
+            #left-sidebar, #right-panel { display: none !important; }
+        }
+
+        /* Controles da playlist: wrap suave no mobile */
+        #playlist-controls-row { flex-wrap: wrap; }
+
+        /* Stories viewer: preenche tela inteira + safe area */
+        #story-viewer {
+            height: 100dvh;
+            height: -webkit-fill-available;
+        }
+    </style>
+</head>
+
+<body class="text-white h-screen flex flex-col overflow-hidden font-sans relative" style="background:#0a0008;">
+
+    <!-- Canvas de Corações Caindo -->
+    <canvas id="hearts-canvas"></canvas>
+
+    <!-- Container Principal -->
+    <div class="flex-1 flex overflow-hidden p-2 gap-2">
+
+        <!-- SIDEBAR ESQUERDA -->
+        <div id="left-sidebar" class="w-64 rounded-lg flex flex-col hidden md:flex z-20"
+            style="background:rgba(10,0,8,0.55); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:1px solid rgba(236,72,153,0.10);">
+            <!-- Navegação Superior -->
+            <div class="p-4 space-y-4">
+                <div class="flex items-center gap-3 text-pink-500 font-bold text-xl mb-6 cursor-pointer"
+                    onclick="closePlaylist()">
+                    <i class="fa-solid fa-heart fa-lg"></i>
+                    <span>Lovify</span>
+                </div>
+                <a href="#" onclick="closePlaylist()"
+                    class="flex items-center gap-4 text-white font-bold transition hover:text-pink-400">
+                    <i class="fa-solid fa-house fa-lg"></i>
+                    <span>Início</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 text-zinc-400 hover:text-white transition">
+                    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+                    <span class="font-semibold">Buscar Memórias</span>
+                </a>
+            </div>
+
+            <!-- Sua Loviteca -->
+            <div class="flex-1 rounded-lg mt-2 p-4 overflow-y-auto flex flex-col" style="background:rgba(10,0,8,0.40);">
+                <div class="flex items-center justify-between text-zinc-400 hover:text-white transition mb-4 cursor-pointer"
+                    onclick="openPlaylistModal()">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-book-heart fa-lg"></i>
+                        <span class="font-bold">Sua Loviteca</span>
+                    </div>
+                    <i class="fa-solid fa-plus hover:text-pink-500 hover:scale-110 transition"
+                        title="Criar Nova Playlist"></i>
+                </div>
+
+                <div id="sidebar-playlists" class="space-y-3 mt-2 flex-1">
+                    <!-- Injetado via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTEÚDO CENTRAL -->
+        <div class="flex-1 rounded-lg overflow-y-auto relative z-10" id="main-scroll-area"
+            style="background:rgba(10,0,8,0.52); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(236,72,153,0.08);">
+
+            <!-- Header fixo do centro -->
+            <div class="sticky top-0 bg-transparent p-4 flex items-center justify-between z-40">
+                <div class="flex gap-2">
+                    <button id="back-btn" onclick="closePlaylist()"
+                        class="w-8 h-8 rounded-full bg-black/50 text-zinc-400 hover:text-white flex items-center justify-center backdrop-blur-sm transition opacity-50 cursor-not-allowed"><i
+                            class="fa-solid fa-chevron-left"></i></button>
+                    <button
+                        class="w-8 h-8 rounded-full bg-black/50 text-zinc-400 flex items-center justify-center backdrop-blur-sm opacity-50 cursor-not-allowed"><i
+                            class="fa-solid fa-chevron-right"></i></button>
+                </div>
+
+            </div>
+
+            <!-- VIEW: TELA INICIAL -->
+            <div id="home-view" class="px-6 pb-6 pt-2 fade-in">
+                <h2 id="greeting" class="text-3xl font-bold text-white mb-6">Boa noite, meu amor ❤️</h2>
+
+                <div id="quick-shortcuts" class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-10">
+                    <!-- Injetado via JS -->
+                </div>
+
+                <div onclick="openPlaylistView('hero-hit')"
+                    class="flex flex-col md:flex-row items-end gap-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition group cursor-pointer">
+                    <div class="relative overflow-hidden rounded-sm shadow-2xl shadow-black">
+                        <img id="hero-card-cover"
+                            src="https://media.discordapp.net/attachments/1379104709054435462/1515978515605094450/25af6a57-80a0-438c-9703-5d5b69cbfe88.png?ex=6a30f883&is=6a2fa703&hm=990eef84d213e7a72b9d817d42bb3071d9396b50e7a5ac45c1bc0c52cf72091a&=&format=webp&quality=lossless&width=875&height=953"
+                            class="w-48 h-48 md:w-56 md:h-56 object-cover group-hover:scale-105 transition duration-500"
+                            alt="Casal">
+                    </div>
+                    <div class="flex flex-col gap-2 w-full">
+                        <span class="text-xs font-bold uppercase tracking-widest text-zinc-400"><i
+                                class="fa-solid fa-circle-check text-pink-500 mr-1"></i> Álbum Principal</span>
+                        <h1 id="hero-card-title"
+                            class="text-4xl md:text-7xl font-black text-white tracking-tighter drop-shadow-md">O MAIOR
+                            HIT</h1>
+                        <p id="hero-card-desc" class="text-zinc-300 text-sm mt-2 font-semibold">Uma coleção das nossas
+                            melhores memórias.</p>
+                        <div class="flex items-center gap-2 mt-2 text-sm text-zinc-400">
+                            <i class="fa-brands fa-spotify text-pink-500 text-lg"></i>
+                            <span class="font-bold text-white">Lovify Original</span>
+                            <span id="relationship-days">• Juntos para sempre</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experiências Imersivas -->
+                <div class="mt-12">
+                    <h2 class="text-2xl font-bold text-white mb-6 hover:underline cursor-pointer">Experiências Imersivas
+                    </h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div onclick="window.location.href='flower.html'"
+                            class="bg-zinc-800/60 p-4 rounded-xl hover:bg-zinc-800 transition cursor-pointer group relative overflow-hidden neon-glow shadow-md border border-white/5 hover:border-pink-500/50">
+                            <div
+                                class="w-full aspect-square mb-4 relative rounded-lg overflow-hidden bg-zinc-900 flex items-center justify-center border border-white/5">
+                                <i
+                                    class="fa-solid fa-seedling text-5xl text-pink-400 group-hover:scale-110 transition duration-500"></i>
+                            </div>
+                            <h3 class="font-bold text-white truncate">A Flor que Nasce</h3>
+                        </div>
+                        <div onclick="window.location.href='galaxy.html'"
+                            class="bg-zinc-800/60 p-4 rounded-xl hover:bg-zinc-800 transition cursor-pointer group relative overflow-hidden neon-glow shadow-md border border-white/5 hover:border-purple-500/50">
+                            <div
+                                class="w-full aspect-square mb-4 relative rounded-lg overflow-hidden bg-[#0a0514] flex items-center justify-center border border-white/5">
+                                <i
+                                    class="fa-solid fa-meteor text-5xl text-purple-400 group-hover:scale-110 transition duration-500"></i>
+                            </div>
+                            <h3 class="font-bold text-white truncate">Nossa Galáxia</h3>
+                        </div>
+                        <div onclick="window.location.href='wishes.html'"
+                            class="bg-zinc-800/60 p-4 rounded-xl hover:bg-zinc-800 transition cursor-pointer group relative overflow-hidden neon-glow shadow-md border border-white/5 hover:border-orange-500/50">
+                            <div
+                                class="w-full aspect-square mb-4 relative rounded-lg overflow-hidden bg-orange-950/40 flex items-center justify-center border border-white/5">
+                                <i
+                                    class="fa-solid fa-fire-flame-curved text-5xl text-orange-500 group-hover:scale-110 transition duration-500"></i>
+                            </div>
+                            <h3 class="font-bold text-white truncate">Céu de Desejos</h3>
+                        </div>
+                        <div onclick="window.location.href='time-machine.html'"
+                            class="bg-zinc-800/60 p-4 rounded-xl hover:bg-zinc-800 transition cursor-pointer group relative overflow-hidden neon-glow shadow-md border border-white/5 hover:border-blue-500/50">
+                            <div
+                                class="w-full aspect-square mb-4 relative rounded-lg overflow-hidden bg-blue-950/30 flex items-center justify-center border border-white/5">
+                                <i
+                                    class="fa-solid fa-hourglass-half text-5xl text-blue-400 group-hover:scale-110 transition duration-500"></i>
+                            </div>
+                            <h3 class="font-bold text-white truncate">Máquina do Tempo</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: TELA DA PLAYLIST / GALERIA -->
+            <div id="playlist-view" class="hidden px-6 pb-6 pt-2 fade-in relative">
+
+                <div class="flex flex-col md:flex-row items-end gap-6 mb-6 mt-4">
+                    <img id="pl-cover" src=""
+                        class="w-48 h-48 md:w-64 md:h-64 object-cover shadow-2xl shadow-black rounded-sm" alt="Capa">
+                    <div class="flex flex-col gap-2 w-full">
+                        <span class="text-xs font-bold uppercase tracking-widest text-white">Álbum de Memórias</span>
+                        <h1 id="pl-title"
+                            class="text-4xl md:text-6xl font-black text-white tracking-tighter drop-shadow-md break-words">
+                            Título</h1>
+                        <p id="pl-desc" class="text-zinc-300 text-sm mt-2 font-semibold">Descrição do álbum.</p>
+                        <div class="flex items-center justify-between mt-2">
+                            <div class="flex items-center gap-2 text-sm text-zinc-400">
+                                <span class="font-bold text-white">Feito por nós</span>
+                                <span id="pl-count">• 0 Lembranças</span>
+                            </div>
+                            <div class="flex gap-3">
+                                <button onclick="editCurrentPlaylist()"
+                                    class="text-zinc-400 hover:text-white bg-zinc-800/50 hover:bg-zinc-700 px-3 py-1.5 rounded-full transition text-xs font-bold flex items-center gap-2"
+                                    title="Editar Playlist">
+                                    <i class="fa-solid fa-pen"></i> Editar
+                                </button>
+                                <button onclick="deleteCurrentPlaylist()"
+                                    class="text-red-400 hover:text-white bg-red-900/20 hover:bg-red-600 px-3 py-1.5 rounded-full transition text-xs font-bold flex items-center gap-2"
+                                    title="Eliminar Playlist">
+                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controles Principais da Playlist -->
+                <div id="playlist-controls-row" class="flex flex-wrap items-center gap-3 py-4 border-b border-white/10 mb-6">
+                    <!-- Botão que toca a música do fundo (Audio Player Principal) -->
+                    <button onclick="toggleMainAudio()"
+                        class="w-14 h-14 bg-pink-500 rounded-full flex items-center justify-center text-black hover:scale-105 hover:bg-pink-400 transition shadow-lg shadow-pink-500/30 shrink-0 global-play-btn">
+                        <i class="fa-solid fa-play fa-xl ml-1"></i>
+                    </button>
+                    <button class="text-pink-500 hover:text-pink-400 hover:scale-110 transition"><i
+                            class="fa-solid fa-heart fa-2xl"></i></button>
+
+                    <div class="ml-auto flex items-center gap-2 flex-wrap justify-end">
+                        <!-- Botão de apagar selecionados (só visível no modo organizar) -->
+                        <button id="delete-selected-btn" onclick="deleteSelectedMedia()" class="hidden bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-full font-bold text-sm transition flex items-center gap-2 select-none shadow-lg">
+                            <i class="fa-solid fa-trash"></i> <span id="delete-selected-label">Apagar (0)</span>
+                        </button>
+                        <button id="toggle-delete-mode-btn" onclick="toggleDeleteMode()"
+                            class="bg-transparent border border-zinc-600 text-zinc-400 hover:border-red-500 hover:text-red-400 px-3 py-2 rounded-full font-bold text-sm transition flex items-center gap-2 select-none">
+                            <i class="fa-solid fa-trash-can"></i> <span class="hidden sm:inline">Organizar</span>
+                        </button>
+                        <label
+                            class="cursor-pointer bg-transparent border border-pink-500 text-pink-400 hover:bg-pink-500 hover:text-white px-4 py-2 rounded-full font-bold text-sm transition flex items-center gap-2 group select-none">
+                            <i class="fa-solid fa-plus group-hover:rotate-90 transition-transform"></i> <span class="hidden sm:inline">Adicionar</span><span class="sm:hidden">Foto</span>
+                            <input type="file" id="media-upload" class="hidden" accept="image/*,video/*" multiple
+                                onchange="handleFileUpload(event)">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Leitor de Música Embutido (YouTube / Spotify) -->
+                <div id="playlist-music-container"
+                    class="hidden mb-8 bg-zinc-950/50 p-4 rounded-xl border border-pink-500/20 shadow-lg">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-pink-400 mb-3"><i
+                            class="fa-solid fa-music mr-2"></i>Música da Nossa Memória (Leitor Integrado)</h3>
+
+                    <!-- Card Customizado Simples (usado para YouTube/Vídeos) -->
+                    <div id="custom-player-card" class="hidden mb-3">
+                        <!-- Conteúdo injetado via JS -->
+                    </div>
+
+                    <div class="relative w-full rounded-lg overflow-hidden bg-black flex justify-center"
+                        id="iframe-wrapper">
+                        <!-- O iframe será injetado aqui -->
+                    </div>
+                </div>
+
+                <div id="playlist-media-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- Itens injetados via JS -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- PAINEL DIREITO (DJ do Amor) -->
+        <div id="right-panel" class="w-72 rounded-lg hidden lg:flex flex-col p-4 overflow-y-auto z-20"
+            style="background:rgba(10,0,8,0.55); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:1px solid rgba(236,72,153,0.10);">
+            <div class="flex items-center justify-between mb-4">
+                <span class="font-bold text-sm text-zinc-300 hover:text-white cursor-pointer">Seu DJ do Amor</span>
+                <div class="flex gap-4 text-zinc-400">
+                    <i class="fa-solid fa-user-plus hover:text-white cursor-pointer transition"></i>
+                    <i class="fa-solid fa-xmark hover:text-white cursor-pointer transition"></i>
+                </div>
+            </div>
+
+            <div
+                class="bg-zinc-800/60 rounded-xl p-4 group cursor-pointer hover:bg-zinc-800 transition shadow-md border border-white/5 mb-4">
+                <div class="relative w-full aspect-square rounded-lg overflow-hidden mb-4 shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1518599904199-0ca897819ddb?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-700"
+                        alt="Casal Destaque">
+                    <div
+                        class="absolute bottom-2 left-2 bg-black/70 px-2 py-1 rounded text-xs font-bold backdrop-blur-md text-white">
+                        <i class="fa-solid fa-chart-simple text-pink-500 mr-1 animate-pulse"></i> Ao Vivo
+                    </div>
+                </div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-bold text-lg text-white group-hover:text-pink-400 transition truncate">A nossa
+                            banda sonora</h3>
+                        <p class="text-sm text-zinc-400 mt-0.5">Lovify Radio</p>
+                    </div>
+                    <button class="text-pink-500 hover:scale-110 transition"><i class="fa-solid fa-heart"></i></button>
+                </div>
+            </div>
+
+            <!-- Card de Letras -->
+            <div
+                class="bg-pink-900/20 rounded-xl p-5 border border-pink-500/20 relative overflow-hidden group cursor-pointer h-64 flex flex-col">
+                <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition">
+                    <i class="fa-solid fa-microphone-lines text-4xl text-pink-500"></i>
+                </div>
+                <div class="flex justify-between items-center mb-4 z-10">
+                    <h4 class="font-bold text-sm text-pink-100 uppercase tracking-widest">Letras</h4>
+                </div>
+                <div class="flex-1 overflow-y-auto lyric-scroll pr-2 pb-4 z-10">
+                    <p class="text-xl font-bold text-pink-100 leading-snug mb-3">"E de repente,<br>o mundo parou."</p>
+                    <p class="text-xl font-bold text-white leading-snug mb-3 drop-shadow-md">Foi naquele segundo,<br>que
+                        eu soube que era você.</p>
+                    <p class="text-xl font-bold text-pink-100/50 leading-snug mb-3">Para todo o sempre...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PLAYER INFERIOR GLOBAL - MOBILE-FIRST -->
+    <div class="border-t border-pink-900/30 flex items-center justify-between px-3 sm:px-4 z-30 relative"
+        style="height: 72px; background:rgba(5,0,5,0.92); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);">
+
+        <!-- Esquerda: capa + info -->
+        <div id="player-left-info" class="flex items-center gap-2 sm:gap-4 w-[40%] sm:w-[30%] min-w-0">
+            <img id="player-cover"
+                src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+                class="w-11 h-11 sm:w-14 sm:h-14 rounded object-cover shrink-0" alt="Capa">
+            <div class="overflow-hidden min-w-0">
+                <a href="#" id="player-title"
+                    class="text-xs sm:text-sm font-semibold text-white hover:underline hover:text-pink-400 transition truncate block">O MAIOR HIT</a>
+                <div class="text-[10px] sm:text-xs text-zinc-400 truncate">Feat. Você e Eu</div>
+            </div>
+            <i class="fa-solid fa-heart text-pink-500 heart-float ml-1 shrink-0 hidden sm:block"></i>
+        </div>
+
+        <!-- Mobile: só botão de play centralizado -->
+        <button id="player-mobile-play" onclick="toggleMainAudio()"
+            class="w-10 h-10 bg-pink-500 rounded-full items-center justify-center text-white hover:scale-105 transition shadow-lg shadow-pink-500/30 global-play-btn shrink-0">
+            <i class="fa-solid fa-play"></i>
+        </button>
+
+        <!-- Centro: controles completos (desktop) -->
+        <div id="player-center-controls" class="flex flex-col items-center max-w-[45%] w-full">
+            <div class="flex items-center gap-6 mb-2">
+                <button class="text-zinc-400 hover:text-white transition hover:scale-110"><i
+                        class="fa-solid fa-shuffle"></i></button>
+                <button class="text-zinc-400 hover:text-white transition hover:scale-110"><i
+                        class="fa-solid fa-backward-step fa-lg"></i></button>
+
+                <!-- Botão de Play Global -->
+                <button onclick="toggleMainAudio()"
+                    class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-black hover:scale-105 transition hover:bg-pink-500 hover:text-white shadow-md global-play-btn">
+                    <i class="fa-solid fa-play ml-1"></i>
+                </button>
+
+                <button class="text-zinc-400 hover:text-white transition hover:scale-110"><i
+                        class="fa-solid fa-forward-step fa-lg"></i></button>
+                <button class="text-pink-500 hover:text-pink-400 transition hover:scale-110"><i
+                        class="fa-solid fa-repeat"></i></button>
+            </div>
+
+            <!-- Barra de Progresso Real -->
+            <div class="flex items-center gap-2 w-full text-xs text-zinc-400 font-medium">
+                <span id="audio-current-time">0:00</span>
+                <div class="h-1 bg-zinc-600 rounded-full flex-1 relative cursor-pointer" id="progress-container"
+                    onclick="seekAudio(event)">
+                    <div id="audio-progress-bar" class="absolute top-0 left-0 h-full bg-pink-500 rounded-full w-[0%]">
+                    </div>
+                    <div id="audio-progress-dot"
+                        class="absolute top-1/2 -translate-y-1/2 left-[0%] w-3 h-3 bg-white rounded-full shadow opacity-0 hover:opacity-100 transition">
+                    </div>
+                </div>
+                <span id="audio-duration">0:00</span>
+            </div>
+        </div>
+
+        <!-- Direita: volume (desktop) -->
+        <div id="player-right-controls" class="flex items-center justify-end gap-3 md:gap-4 w-[30%] min-w-[120px] text-zinc-400">
+            <button class="hover:text-pink-400 transition hover:scale-110 hidden md:block" title="Declaração Mágica"
+                onclick="openMagicModal()"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+            <i class="fa-solid fa-volume-high hover:text-white transition cursor-pointer" onclick="toggleMute()"></i>
+            <div class="h-1 w-16 md:w-20 bg-zinc-600 rounded-full relative cursor-pointer" onclick="setVolume(event)">
+                <div id="volume-bar" class="absolute top-0 left-0 h-full bg-white rounded-full w-[100%]"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- O AUDIO TAG OCULTO QUE TOCA A MÚSICA DE FUNDO -->
+    <!-- (Usando uma faixa instrumental romântica sem direitos de autor para fallback) -->
+    <audio id="main-audio-element" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
+
+    <!-- ===== MODAL: VISUALIZADOR DE STORIES ===== -->
+    <div id="story-viewer" class="fixed inset-0 z-[90] hidden flex-col items-stretch justify-between select-none" style="background:#000; height:100dvh;">
+
+        <!-- Barra de Progresso Superior + Header -->
+        <div class="flex-shrink-0 px-3 sm:px-4" style="padding-top: max(env(safe-area-inset-top, 0px), 12px);">
+            <!-- Barrinhas de progresso -->
+            <div id="story-progress-bars" class="flex gap-1 pt-2 pb-1">
+                <!-- Segmentos injetados via JS -->
+            </div>
+            <!-- Header com capa + nome -->
+            <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2">
+                    <img id="story-header-cover" src="" class="w-8 h-8 rounded-full object-cover ring-2 ring-pink-500" alt="">
+                    <div>
+                        <p id="story-header-title" class="text-white font-bold text-sm leading-none"></p>
+                        <p id="story-header-count" class="text-white/60 text-xs leading-none mt-0.5"></p>
+                    </div>
+                </div>
+                <button onclick="closeStoryViewer()" class="w-10 h-10 rounded-full bg-white/10 active:bg-white/30 flex items-center justify-center text-white transition touch-manipulation">
+                    <i class="fa-solid fa-xmark fa-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Área de Mídia + Zonas de Toque -->
+        <div class="flex-1 relative flex items-center justify-center overflow-hidden" id="story-touch-area">
+            <!-- Zona toque esquerda (anterior) -->
+            <div class="story-tap-zone left-0" id="story-left-zone"></div>
+            <!-- Zona toque direita (próximo) -->
+            <div class="story-tap-zone right-0" id="story-right-zone"></div>
+
+            <!-- Container da mídia atual -->
+            <div id="story-media-container" class="relative flex items-center justify-center w-full h-full px-2 sm:px-8">
+                <!-- <img> ou <video> injetados via JS -->
+            </div>
+
+            <!-- Setas laterais (visíveis apenas em desktop) -->
+            <button onclick="prevStory()" id="story-prev-arrow" class="absolute left-2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 hidden md:flex items-center justify-center text-white transition">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button onclick="nextStory()" id="story-next-arrow" class="absolute right-2 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 hidden md:flex items-center justify-center text-white transition">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Rodapé com safe area para iOS -->
+        <div class="flex-shrink-0" style="height: max(env(safe-area-inset-bottom, 0px), 20px);"></div>
+    </div>
+
+    <!-- MODAL GERIR PLAYLIST (Criar/Editar) -->
+    <div id="playlist-modal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-[0_0_50px_rgba(236,72,153,0.2)] transform scale-95 transition-transform duration-300"
+            id="playlist-modal-content">
+            <div
+                class="p-6 border-b border-zinc-800 flex items-center justify-between bg-gradient-to-r from-zinc-800 to-zinc-900">
+                <h3 id="pm-title" class="text-xl font-bold text-white"><i
+                        class="fa-solid fa-pen-to-square text-pink-500 mr-2"></i>Nova Playlist</h3>
+                <button onclick="closePlaylistModal()" class="text-zinc-500 hover:text-white transition">
+                    <i class="fa-solid fa-xmark fa-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <input type="hidden" id="pm-id">
+
+                <div>
+                    <label class="block text-xs font-bold text-zinc-400 mb-1 uppercase tracking-wider">Título do
+                        Álbum</label>
+                    <input type="text" id="pm-name" placeholder="Ex: Nossa Viagem a Paris"
+                        class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-pink-500 transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-zinc-400 mb-1 uppercase tracking-wider">Descrição
+                        Curta</label>
+                    <input type="text" id="pm-desc" placeholder="Ex: O dia mais feliz das nossas vidas..."
+                        class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-pink-500 transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-zinc-400 mb-1 uppercase tracking-wider">Imagem de
+                        Capa</label>
+                    <div class="flex gap-3 items-center mb-2">
+                        <label
+                            class="flex-1 cursor-pointer bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 px-4 py-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2 select-none hover:border-pink-500/50">
+                            <i class="fa-solid fa-upload text-pink-500"></i>
+                            <span id="pm-cover-label">Carregar da Galeria</span>
+                            <input type="file" id="pm-cover-file" class="hidden" accept="image/*"
+                                onchange="handleCoverUpload(event)">
+                        </label>
+                        <div class="w-11 h-11 rounded overflow-hidden bg-zinc-950 border border-zinc-800 shrink-0"
+                            id="pm-cover-preview-container">
+                            <img id="pm-cover-preview"
+                                src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?ixlib=rb-4.0.3&w=100&q=80"
+                                class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    <!-- Input de texto opcional caso queira colar link -->
+                    <input type="text" id="pm-cover" placeholder="Ou cole o link da imagem aqui..."
+                        class="w-full bg-zinc-800/40 border border-zinc-700/60 rounded-lg px-4 py-2 text-zinc-300 focus:outline-none focus:border-pink-500 transition text-xs placeholder-zinc-600">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-zinc-400 mb-1 uppercase tracking-wider">Link da Música
+                        (YouTube ou Spotify)</label>
+                    <div class="relative">
+                        <i class="fa-brands fa-youtube absolute left-3 top-3.5 text-zinc-500"></i>
+                        <input type="text" id="pm-music" placeholder="Cole o link do vídeo ou música aqui..."
+                            class="w-full bg-zinc-800 border border-zinc-700 rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:border-pink-500 transition text-sm">
+                    </div>
+                    <p class="text-[10px] text-zinc-500 mt-1">Links do YouTube e Spotify criarão um mini-leitor
+                        integrado no álbum para tocar perfeitamente dentro do site.</p>
+                </div>
+
+                <div class="pt-4 flex gap-3">
+                    <button onclick="closePlaylistModal()"
+                        class="flex-1 bg-transparent border border-zinc-700 text-white font-bold py-3 rounded-lg hover:bg-zinc-800 transition">Cancelar</button>
+                    <button onclick="savePlaylist()"
+                        class="flex-1 bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 rounded-lg transition shadow-lg shadow-pink-500/20">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GEMINI -->
+    <div id="gemini-modal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-[0_0_50px_rgba(236,72,153,0.2)] transform scale-95 transition-transform duration-300"
+            id="gemini-modal-content">
+            <div
+                class="p-6 border-b border-zinc-800 flex items-center justify-between bg-gradient-to-r from-pink-900/20 to-purple-900/20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-500">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Declaração Mágica</h3>
+                        <p class="text-xs text-pink-400">Powered by Gemini AI ✨</p>
+                    </div>
+                </div>
+                <button onclick="closeMagicModal()" class="text-zinc-500 hover:text-white transition">
+                    <i class="fa-solid fa-xmark fa-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <!-- Configuração de API Key -->
+                <div id="apikey-setup-area" class="hidden space-y-3">
+                    <p class="text-zinc-300 text-sm">Para ativar o gerador poético com Inteligência Artificial, insira
+                        sua chave da API do Google Gemini. Ela é salva de forma segura apenas no seu navegador.</p>
+                    <input type="password" id="api-key-input" placeholder="Cole sua API Key do Gemini aqui..."
+                        class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition placeholder-zinc-500 text-sm">
+                    <button onclick="saveApiKey()"
+                        class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-2 rounded-lg transition text-sm">
+                        Salvar Chave
+                    </button>
+                    <p class="text-[11px] text-zinc-500 text-center">Não tem uma chave? Obtenha gratuitamente no Google
+                        AI Studio.</p>
+                </div>
+
+                <!-- Interface de Geração -->
+                <div id="magic-generator-area" class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <p class="text-zinc-300 text-sm">Qual o clima do momento? Diga algumas palavras para a
+                            inteligência artificial gerar uma mensagem poética exclusiva.</p>
+                        <button onclick="showApiKeySetup()" class="text-zinc-500 hover:text-pink-400 text-xs transition"
+                            title="Configurar API Key">
+                            <i class="fa-solid fa-gear"></i>
+                        </button>
+                    </div>
+
+                    <input type="text" id="vibe-input" placeholder="Ex: saudade, apaixonado, nosso primeiro beijo..."
+                        class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition placeholder-zinc-500">
+
+                    <button onclick="generateLoveMessage()" id="generate-btn"
+                        class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold py-3 rounded-lg hover:opacity-90 transition flex items-center justify-center gap-2 shadow-lg shadow-pink-500/20">
+                        <i class="fa-solid fa-stars"></i> Gerar Mensagem ✨
+                    </button>
+                </div>
+
+                <!-- Área de Resultado -->
+                <div id="result-area"
+                    class="hidden mt-4 p-5 bg-zinc-800/50 rounded-xl border border-zinc-700/50 relative">
+                    <i class="fa-solid fa-quote-left text-3xl text-pink-500/20 absolute top-4 left-4"></i>
+                    <div id="loading-state" class="hidden flex flex-col items-center justify-center py-6 gap-3">
+                        <div class="spinner"></div>
+                        <span class="text-sm text-pink-400 animate-pulse">Consultando as estrelas...</span>
+                    </div>
+                    <div id="ai-response"
+                        class="text-zinc-200 text-sm leading-relaxed whitespace-pre-line relative z-10 hidden">
+                    </div>
+                    <div id="error-state" class="text-red-400 text-sm hidden text-center">
+                        <i class="fa-solid fa-triangle-exclamation mb-2"></i><br>
+                        Ops! As estrelas se embaralharam. Tente novamente.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data de início do namoro (ajustável) - 1280 dias antes do dia 15 de Junho de 2026 é aproximadamente 12 de Dezembro de 2022
+        const START_DATE = "2022-12-12";
+        const DEFAULT_MUSIC_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+
+        // Gerenciamento da API Key
+        let apiKey = "AQ.Ab8RN6I_hHDkvKPaTvIDlsKe4LggR4ArgRdoFHMAJzQozrSvYQ";
+
+        // --- 1. LÓGICA DO LEITOR DE ÁUDIO GLOBAL (A BARRA INFERIOR) ---
+        const audioEl = document.getElementById('main-audio-element');
+        const playBtns = document.querySelectorAll('.global-play-btn');
+        const progressBar = document.getElementById('audio-progress-bar');
+        const progressDot = document.getElementById('audio-progress-dot');
+        const timeCurrent = document.getElementById('audio-current-time');
+        const timeDuration = document.getElementById('audio-duration');
+
+        // Modo atual do player: 'html5' ou 'iframe'
+        let currentMusicMode = 'html5';
+        let currentIframeEmbedUrl = '';
+        let iframeIsPlaying = false;
+
+        function toggleMainAudio() {
+            if (currentMusicMode === 'iframe') {
+                // No modo iframe, re-injetamos o iframe com autoplay=1 ao clicar em play
+                if (!iframeIsPlaying) {
+                    iframeIsPlaying = true;
+                    // Remove o hint de play se estiver presente
+                    const hint = document.getElementById('iframe-play-hint');
+                    if (hint) {
+                        hint.remove();
+                    }
+                    injectIframe(currentIframeEmbedUrl, true);
+                    updatePlayButtonsUI();
+                } else {
+                    // Pausa: remove o iframe (única forma de parar YT/Spotify sem API)
+                    iframeIsPlaying = false;
+                    const wrapper = document.getElementById('iframe-wrapper');
+                    const saved = currentIframeEmbedUrl;
+                    wrapper.innerHTML = '';
+                    // Guarda o URL para conseguir retomar
+                    currentIframeEmbedUrl = saved;
+
+                    // Recria o hint e o iframe com autoplay=0
+                    setupMusicPlayer(playlists[currentActivePlaylistId]?.music || '');
+
+                    updatePlayButtonsUI();
+                }
+                return;
+            }
+            // Modo html5 normal
+            if (audioEl.paused) {
+                audioEl.play().catch(e => console.log("Erro a reproduzir", e));
+            } else {
+                audioEl.pause();
+            }
+            updatePlayButtonsUI();
+        }
+
+        function updatePlayButtonsUI() {
+            const isPlaying = currentMusicMode === 'iframe' ? iframeIsPlaying : !audioEl.paused;
+            playBtns.forEach(btn => {
+                const icon = btn.querySelector('i');
+                if (icon) {
+                    if (isPlaying) {
+                        icon.className = icon.className.includes('fa-xl')
+                            ? 'fa-solid fa-pause fa-xl'
+                            : 'fa-solid fa-pause';
+                    } else {
+                        icon.className = icon.className.includes('fa-xl')
+                            ? 'fa-solid fa-play fa-xl ml-1'
+                            : 'fa-solid fa-play ml-1';
+                    }
+                }
+            });
+        }
+
+        // Atualizar barra de progresso conforme a música toca
+        audioEl.addEventListener('timeupdate', () => {
+            if (!isNaN(audioEl.duration)) {
+                const percent = (audioEl.currentTime / audioEl.duration) * 100;
+                progressBar.style.width = `${percent}%`;
+                progressDot.style.left = `${percent}%`;
+                timeCurrent.innerText = formatTime(audioEl.currentTime);
+            }
+        });
+
+        audioEl.addEventListener('loadedmetadata', () => {
+            timeDuration.innerText = formatTime(audioEl.duration);
+        });
+
+        // Fallback caso a música falhe
+        audioEl.addEventListener('error', () => {
+            if (audioEl.src.includes('assets/music/theme.mp3')) {
+                console.warn("Música local não encontrada, caindo de volta para a demo online.");
+                audioEl.src = DEFAULT_MUSIC_URL;
+                audioEl.load();
+                if (!audioEl.paused) {
+                    audioEl.play().catch(e => console.log(e));
+                }
+            }
+        });
+
+        // Clique na barra para avançar a música
+        function seekAudio(event) {
+            const container = document.getElementById('progress-container');
+            const rect = container.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const percent = clickX / rect.width;
+            audioEl.currentTime = percent * audioEl.duration;
+        }
+
+        // Controlo de Volume
+        function setVolume(event) {
+            const container = event.currentTarget;
+            const rect = container.getBoundingClientRect();
+            let percent = (event.clientX - rect.left) / rect.width;
+            percent = Math.max(0, Math.min(1, percent));
+            audioEl.volume = percent;
+            document.getElementById('volume-bar').style.width = `${percent * 100}%`;
+        }
+
+        function toggleMute() {
+            audioEl.muted = !audioEl.muted;
+            document.getElementById('volume-bar').style.width = audioEl.muted ? '0%' : `${audioEl.volume * 100}%`;
+        }
+
+        function formatTime(seconds) {
+            if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60);
+            return `${min}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        // --- 2. GESTÃO DE DADOS (Playlists e Media) ---
+        const defaultPlaylists = {
+            "hero-hit": { title: "O MAIOR HIT", desc: "Uma coleção das nossas melhores memórias.", cover: "https://media.discordapp.net/attachments/1379104709054435462/1515978515605094450/25af6a57-80a0-438c-9703-5d5b69cbfe88.png?ex=6a30f883&is=6a2fa703&hm=990eef84d213e7a72b9d817d42bb3071d9396b50e7a5ac45c1bc0c52cf72091a&=&format=webp&quality=lossless&width=875&height=953", music: "assets/music/theme.mp3" },
+            "pl_inicio": { title: "Momentos Curtidos", desc: "A nossa seleção diária de amor.", cover: "https://media.discordapp.net/attachments/1379104709054435462/1515978515605094450/25af6a57-80a0-438c-9703-5d5b69cbfe88.png?ex=6a30f883&is=6a2fa703&hm=990eef84d213e7a72b9d817d42bb3071d9396b50e7a5ac45c1bc0c52cf72091a&=&format=webp&quality=lossless&width=875&height=953", music: "assets/music/theme.mp3" },
+            "pl_viagem": { title: "Nossa Primeira Viagem", desc: "Quando descobrimos o mundo juntos.", cover: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80", music: "https://www.youtube.com/watch?v=rtOvBOTyX00" }
+        };
+
+        let playlists = JSON.parse(localStorage.getItem('lovify_playlists')) || defaultPlaylists;
+        if (!playlists["hero-hit"]) {
+            playlists["hero-hit"] = defaultPlaylists["hero-hit"];
+            localStorage.setItem('lovify_playlists', JSON.stringify(playlists));
+        }
+        let sessionMedia = JSON.parse(localStorage.getItem('lovify_media')) || {};
+        // Limpar blobs temporários expirados de sessões anteriores
+        Object.keys(sessionMedia).forEach(plId => {
+            if (sessionMedia[plId]) {
+                sessionMedia[plId] = sessionMedia[plId].filter(item => item && item.url && !item.isTemporary && !item.url.startsWith('blob:'));
+            }
+        });
+        let currentActivePlaylistId = null;
+        let deleteModeActive = false;
+        let selectedMediaIndices = [];
+
+        // ===== STORIES STATE =====
+        let storyList = [];
+        let currentStoryIndex = 0;
+        let storyTimer = null;
+        let storyDuration = 5000;
+        let storyStartTime = 0;
+        let storyElapsedTime = 0;
+        let isStoryPaused = false;
+        let storyHoldTimeout = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateHeroCardUI();
+            renderSidebar();
+            renderHomeShortcuts();
+            initDaysCounter();
+        });
+
+        function updateHeroCardUI() {
+            const heroPl = playlists["hero-hit"];
+            if (heroPl) {
+                const coverEl = document.getElementById('hero-card-cover');
+                const titleEl = document.getElementById('hero-card-title');
+                const descEl = document.getElementById('hero-card-desc');
+                if (coverEl) coverEl.src = heroPl.cover;
+                if (titleEl) titleEl.innerText = heroPl.title;
+                if (descEl) descEl.innerText = heroPl.desc;
+            }
+        }
+
+        function initDaysCounter() {
+            const startDate = new Date(START_DATE);
+            const today = new Date();
+            const timeDiff = Math.abs(today - startDate);
+            const diffDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+            const counterElement = document.getElementById('relationship-days');
+            if (counterElement) {
+                counterElement.innerText = `• ${diffDays.toLocaleString('pt-BR')} dias juntos`;
+            }
+        }
+
+        function renderSidebar() {
+            const container = document.getElementById('sidebar-playlists');
+            container.innerHTML = '';
+            Object.keys(playlists).forEach(id => {
+                if (id === 'hero-hit') return; // Mantém o hero-hit especial no card principal da home
+                const pl = playlists[id];
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-3 cursor-pointer group p-1 hover:bg-zinc-800 rounded-md transition";
+                div.onclick = () => openPlaylistView(id);
+                div.innerHTML = `
+                    <img src="${pl.cover}" class="w-10 h-10 rounded object-cover group-hover:brightness-110 transition shrink-0" onerror="this.src='https://images.unsplash.com/photo-1518199266791-5375a83190b7?ixlib=rb-4.0.3&w=100&q=80'">
+                    <div class="overflow-hidden">
+                        <p class="text-white font-semibold group-hover:text-pink-400 transition truncate text-sm">${pl.title}</p>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderHomeShortcuts() {
+            const container = document.getElementById('quick-shortcuts');
+            container.innerHTML = '';
+            Object.keys(playlists).filter(id => id !== 'hero-hit').slice(0, 6).forEach(id => {
+                const pl = playlists[id];
+                const div = document.createElement('div');
+                div.className = "flex items-center bg-white/5 hover:bg-white/20 transition rounded-md overflow-hidden cursor-pointer group shadow-sm";
+                div.onclick = () => openPlaylistView(id);
+                div.innerHTML = `
+                    <img src="${pl.cover}" class="w-14 h-14 object-cover" onerror="this.src='https://images.unsplash.com/photo-1518199266791-5375a83190b7?ixlib=rb-4.0.3&w=150&q=80'">
+                    <span class="font-bold px-3 text-xs md:text-sm truncate">${pl.title}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // --- 3. NAVEGAÇÃO E SINCRONIZAÇÃO DA BARRA INFERIOR ---
+        const homeView = document.getElementById('home-view');
+        const playlistView = document.getElementById('playlist-view');
+        const scrollArea = document.getElementById('main-scroll-area');
+        const backBtn = document.getElementById('back-btn');
+
+        function isDirectAudio(url) {
+            if (!url) return false;
+            const cleanUrl = url.toLowerCase().split('?')[0];
+            return cleanUrl.endsWith('.mp3') || cleanUrl.endsWith('.wav') || cleanUrl.endsWith('.ogg') || cleanUrl.endsWith('.m4a') || cleanUrl.endsWith('.aac') || cleanUrl.includes('/music/') || cleanUrl.includes('/audio/');
+        }
+
+        function openPlaylistView(id) {
+            currentActivePlaylistId = id;
+
+            // Reseta o modo de exclusão ao mudar de playlist
+            deleteModeActive = false;
+            selectedMediaIndices = [];
+            const deleteModeBtn = document.getElementById('toggle-delete-mode-btn');
+            if (deleteModeBtn) {
+                deleteModeBtn.className = "bg-transparent border border-zinc-600 text-zinc-400 hover:border-red-500 hover:text-red-400 px-4 py-2 rounded-full font-bold text-sm transition flex items-center gap-2 select-none";
+                deleteModeBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Organizar';
+            }
+            const delBtn = document.getElementById('delete-selected-btn');
+            if (delBtn) { delBtn.classList.add('hidden'); delBtn.classList.remove('flex'); }
+
+            const pl = playlists[id] || {
+                title: "O MAIOR HIT",
+                desc: "Uma coleção das nossas melhores memórias.",
+                cover: "https://media.discordapp.net/attachments/1379104709054435462/1515978515605094450/25af6a57-80a0-438c-9703-5d5b69cbfe88.png?ex=6a30f883&is=6a2fa703&hm=990eef84d213e7a72b9d817d42bb3071d9396b50e7a5ac45c1bc0c52cf72091a&=&format=webp&quality=lossless&width=875&height=953",
+                music: "assets/music/theme.mp3"
+            };
+            const plTitle = pl.title;
+            const plCover = pl.cover;
+            const plDesc = pl.desc;
+            const plMusic = pl.music;
+
+            // Atualiza View Superior
+            document.getElementById('pl-title').innerText = plTitle;
+            document.getElementById('pl-cover').src = plCover;
+            document.getElementById('pl-desc').innerText = plDesc;
+
+            // Sincroniza a Barra Inferior com a Playlist Atual!
+            document.getElementById('player-title').innerText = plTitle;
+            document.getElementById('player-cover').src = plCover;
+
+            renderMediaGrid(id);
+
+            // Decide o modo de reprodução baseado no tipo de link
+            if (isDirectAudio(plMusic)) {
+                // MODO HTML5: arquivo de áudio direto
+                currentMusicMode = 'html5';
+                iframeIsPlaying = false;
+                document.getElementById('playlist-music-container').classList.add('hidden');
+                document.getElementById('iframe-wrapper').innerHTML = '';
+                const customCard = document.getElementById('custom-player-card');
+                if (customCard) customCard.classList.add('hidden');
+
+                if (audioEl.src !== new URL(plMusic, location.href).href) {
+                    audioEl.pause();
+                    audioEl.src = plMusic;
+                    audioEl.load();
+                }
+                updatePlayButtonsUI();
+
+            } else if (plMusic && plMusic.trim() !== '') {
+                // MODO IFRAME: YouTube ou Spotify
+                currentMusicMode = 'iframe';
+                iframeIsPlaying = false;
+
+                // Para o áudio html5 para não sobrepor
+                if (!audioEl.paused) {
+                    audioEl.pause();
+                }
+
+                const embedUrl = getEmbedUrl(plMusic);
+                currentIframeEmbedUrl = embedUrl;
+
+                // Exibe o iframe (sem autoplay por enquanto — o play button activa)
+                setupMusicPlayer(plMusic);
+                updatePlayButtonsUI();
+
+            } else {
+                // Sem música definida: volta para modo html5 com áudio padrão
+                currentMusicMode = 'html5';
+                iframeIsPlaying = false;
+                document.getElementById('playlist-music-container').classList.add('hidden');
+                document.getElementById('iframe-wrapper').innerHTML = '';
+                const customCard = document.getElementById('custom-player-card');
+                if (customCard) customCard.classList.add('hidden');
+                updatePlayButtonsUI();
+            }
+
+            homeView.classList.add('hidden');
+            playlistView.classList.remove('hidden');
+            backBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            backBtn.classList.add('hover:bg-zinc-800', 'cursor-pointer', 'text-white');
+            scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function closePlaylist() {
+            playlistView.classList.add('hidden');
+            homeView.classList.remove('hidden');
+            backBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            backBtn.classList.remove('hover:bg-zinc-800', 'cursor-pointer', 'text-white');
+            document.getElementById('iframe-wrapper').innerHTML = '';
+            document.getElementById('playlist-music-container').classList.add('hidden');
+
+            // Reseta a música para o padrão se foi alterada
+            if (!audioEl.src.includes('SoundHelix-Song-1') && !audioEl.src.includes('theme.mp3')) {
+                audioEl.src = 'assets/music/theme.mp3';
+                audioEl.load();
+                updatePlayButtonsUI();
+            }
+
+            currentActivePlaylistId = null;
+            scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- 4. PLAYER DE IFRAME (Spotify & YouTube) ---
+        function renderCustomPlayerCard() {
+            const card = document.getElementById('custom-player-card');
+            if (!card) return;
+
+            card.classList.remove('hidden');
+
+            const pl = playlists[currentActivePlaylistId] || { title: "O Maior Hit", cover: "" };
+            const plTitle = pl.title;
+            const plCover = pl.cover || "https://images.unsplash.com/photo-1518199266791-5375a83190b7?ixlib=rb-4.0.3&w=100&q=80";
+
+            const isPlaying = iframeIsPlaying;
+            const playingClass = isPlaying ? "playing" : "";
+            const statusText = isPlaying ? "Tocando música de fundo..." : "Música pausada";
+            const pulseClass = isPlaying ? "animate-pulse" : "";
+
+            card.innerHTML = `
+                <div class="flex items-center gap-4 p-4 bg-zinc-900/40 rounded-xl border border-white/5 backdrop-blur-md">
+                    <div class="relative w-14 h-14 rounded overflow-hidden shrink-0 shadow-md">
+                        <img src="${plCover}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                            <i class="fa-solid fa-music text-pink-400 ${pulseClass}"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 overflow-hidden">
+                        <h4 class="font-bold text-sm text-white truncate">${plTitle}</h4>
+                        <p class="text-xs text-zinc-400 truncate">${statusText}</p>
+                    </div>
+                    <!-- Ondas de áudio animadas -->
+                    <div class="flex items-end gap-1 h-6 pr-2 ${playingClass}">
+                        <div class="wave-bar wave-bar-1"></div>
+                        <div class="wave-bar wave-bar-2"></div>
+                        <div class="wave-bar wave-bar-3"></div>
+                        <div class="wave-bar wave-bar-4"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function injectIframe(embedUrl, autoplay) {
+            const wrapper = document.getElementById('iframe-wrapper');
+            const customCard = document.getElementById('custom-player-card');
+            wrapper.innerHTML = '';
+            if (!embedUrl) return;
+
+            // Remove any existing autoplay parameters to avoid duplicates
+            let cleanUrl = embedUrl.replace(/[?&]autoplay=[01]/g, '');
+
+            let url = cleanUrl;
+            if (autoplay) {
+                url += (url.includes('?') ? '&' : '?') + 'autoplay=1';
+            } else {
+                url += (url.includes('?') ? '&' : '?') + 'autoplay=0';
+            }
+
+            if (url.includes('spotify.com')) {
+                // Spotify: show normal visible iframe
+                if (customCard) customCard.classList.add('hidden');
+                wrapper.className = "relative w-full rounded-lg overflow-hidden bg-black flex justify-center";
+                wrapper.innerHTML = `<iframe style="border-radius:12px" src="${url}" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+            } else if (url.includes('youtube.com') || url.includes('youtube-nocookie.com')) {
+                // YouTube: hide the actual iframe, but render it so it plays, and render the custom visualizer!
+                wrapper.className = "absolute w-[1px] h-[1px] overflow-hidden opacity-0 pointer-events-none";
+                wrapper.innerHTML = `<iframe width="100%" height="315" src="${url}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+
+                // Render custom card in place of video
+                renderCustomPlayerCard();
+            }
+        }
+
+        function setupMusicPlayer(musicUrl) {
+            const container = document.getElementById('playlist-music-container');
+            const wrapper = document.getElementById('iframe-wrapper');
+            const customCard = document.getElementById('custom-player-card');
+            wrapper.innerHTML = '';
+
+            // Remove any existing hint
+            const existingHint = document.getElementById('iframe-play-hint');
+            if (existingHint) {
+                existingHint.remove();
+            }
+
+            if (!musicUrl || musicUrl.trim() === '') {
+                container.classList.add('hidden');
+                if (customCard) customCard.classList.add('hidden');
+                return;
+            }
+
+            const embedUrl = getEmbedUrl(musicUrl);
+
+            if (!embedUrl || embedUrl === musicUrl && !musicUrl.includes('spotify') && !musicUrl.includes('youtube') && !musicUrl.includes('youtu.be')) {
+                // Link desconhecido — botão externo
+                container.classList.remove('hidden');
+                if (customCard) customCard.classList.add('hidden');
+                wrapper.className = "relative w-full rounded-lg overflow-hidden bg-black flex justify-center";
+                wrapper.innerHTML = `<div class="p-4 text-center"><a href="${musicUrl}" target="_blank" class="bg-pink-600 hover:bg-pink-500 text-white font-bold py-2 px-6 rounded-full inline-block transition">Abrir Link Externo</a></div>`;
+                return;
+            }
+
+            container.classList.remove('hidden');
+            currentIframeEmbedUrl = embedUrl;
+
+            // Injeta sem autoplay — o utilizador clica em play para iniciar
+            injectIframe(embedUrl, false);
+
+            // Mostra indicador de que o play button vai iniciar a música
+            const hint = document.createElement('p');
+            hint.id = 'iframe-play-hint';
+            hint.className = 'text-xs text-pink-400/70 text-center mt-2 animate-pulse';
+            hint.innerHTML = '<i class="fa-solid fa-play mr-1"></i>Clique no botão Play da playlist ou da barra inferior para iniciar a música';
+            wrapper.after(hint);
+        }
+
+        // Esta função corrige os links para tocarem DENTRO do site
+        function getEmbedUrl(url) {
+            if (!url) return '';
+            url = url.trim();
+            try {
+                if (url.includes('spotify.com')) {
+                    // Suporta track, playlist, album, artist, episode, show
+                    const match = url.match(/(track|playlist|album|artist|episode|show)\/([a-zA-Z0-9]+)/);
+                    if (match) {
+                        return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0`;
+                    }
+                } else if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('youtube-nocookie.com')) {
+                    let videoId = '';
+
+                    if (url.includes('v=')) {
+                        videoId = url.split('v=')[1].split('&')[0];
+                    } else if (url.includes('/shorts/')) {
+                        videoId = url.split('/shorts/')[1].split('?')[0].split('/')[0];
+                    } else if (url.includes('/embed/')) {
+                        videoId = url.split('/embed/')[1].split('?')[0].split('/')[0];
+                    } else if (url.includes('youtu.be/')) {
+                        videoId = url.split('youtu.be/')[1].split('?')[0].split('/')[0];
+                    }
+
+                    if (videoId) {
+                        return `https://www.youtube.com/embed/${videoId}?rel=0`;
+                    }
+                }
+            } catch (e) { console.error("Erro a processar link", e); }
+            return url;
+        }
+
+        // --- 5. CONTROLE DO MODAL GEMINI COM API KEY ---
+        const apikeySetupArea = document.getElementById('apikey-setup-area');
+        const magicGeneratorArea = document.getElementById('magic-generator-area');
+
+        function initModalState() {
+            if (!apiKey) {
+                showApiKeySetup();
+            } else {
+                showGeneratorArea();
+            }
+        }
+
+        function showApiKeySetup() {
+            apikeySetupArea.classList.remove('hidden');
+            magicGeneratorArea.classList.add('hidden');
+        }
+
+        function showGeneratorArea() {
+            apikeySetupArea.classList.add('hidden');
+            magicGeneratorArea.classList.remove('hidden');
+        }
+
+        function saveApiKey() {
+            const keyInput = document.getElementById('api-key-input').value.trim();
+            if (keyInput) {
+                apiKey = keyInput;
+                localStorage.setItem('lovify_gemini_api_key', keyInput);
+                showGeneratorArea();
+            } else {
+                alert("Por favor, insira uma chave válida.");
+            }
+        }
+
+        // Função de Fetch com Retry Exponencial (Melhor prática para APIs)
+        async function fetchWithRetry(url, options, maxRetries = 5) {
+            let delays = [1000, 2000, 4000, 8000, 16000];
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        throw new Error(`Erro na API: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (err) {
+                    console.warn(`Tentativa ${i + 1} falhou. Retentando em ${delays[i]}ms...`);
+                    if (i === maxRetries - 1) throw err;
+                    await new Promise(resolve => setTimeout(resolve, delays[i]));
+                }
+            }
+        }
+
+        async function generateLoveMessage() {
+            if (!apiKey) {
+                showApiKeySetup();
+                return;
+            }
+
+            const vibeInput = document.getElementById('vibe-input').value.trim();
+            const vibeText = vibeInput ? vibeInput : "um amor imenso e eterno";
+
+            const resultArea = document.getElementById('result-area');
+            const loadingState = document.getElementById('loading-state');
+            const aiResponse = document.getElementById('ai-response');
+            const errorState = document.getElementById('error-state');
+            const generateBtn = document.getElementById('generate-btn');
+
+            // Reset UI
+            resultArea.classList.remove('hidden');
+            loadingState.classList.remove('hidden');
+            aiResponse.classList.add('hidden');
+            errorState.classList.add('hidden');
+            generateBtn.disabled = true;
+            generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            const prompt = `Escreva uma declaração de amor muito romântica, poética e curta (no máximo 2 ou 3 parágrafos curtos) para minha namorada/esposa. O clima ou tema da mensagem é: "${vibeText}". Use um tom doce, apaixonado e finalize com uma frase marcante.`;
+
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: {
+                    parts: [{ text: "Você é um poeta super romântico ajudando alguém a expressar seu amor através de um aplicativo estilo Spotify chamado Lovify." }]
+                }
+            };
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            try {
+                const data = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (generatedText) {
+                    let htmlText = generatedText
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\n/g, '<br>');
+                    aiResponse.innerHTML = htmlText;
+                    aiResponse.classList.remove('hidden');
+                } else {
+                    throw new Error("Resposta vazia da API");
+                }
+            } catch (error) {
+                console.error("Erro ao gerar mensagem:", error);
+                errorState.classList.remove('hidden');
+            } finally {
+                loadingState.classList.add('hidden');
+                generateBtn.disabled = false;
+                generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // --- SISTEMA CRUD E UPLOAD DE MEDIA MANTIDOS ---
+        const plModal = document.getElementById('playlist-modal');
+
+        function handleCoverUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const label = document.getElementById('pm-cover-label');
+            const preview = document.getElementById('pm-cover-preview');
+            label.innerText = "Processando...";
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    // Redimensionar e comprimir a imagem usando canvas para economizar espaço no localStorage
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Definir tamanho máximo de 400x400 para a capa
+                    const maxDim = 400;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxDim) {
+                            height *= maxDim / width;
+                            width = maxDim;
+                        }
+                    } else {
+                        if (height > maxDim) {
+                            width *= maxDim / height;
+                            height = maxDim;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Comprimir para JPEG com qualidade de 0.7 para ficar bem leve (<30kb)
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+                    // Atualiza o input oculto e a imagem de preview
+                    document.getElementById('pm-cover').value = compressedBase64;
+                    preview.src = compressedBase64;
+
+                    label.innerText = "Imagem Carregada!";
+                    setTimeout(() => { label.innerText = "Carregar da Galeria"; }, 2000);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function openPlaylistModal(id = null) {
+            const isEdit = !!id;
+            document.getElementById('pm-title').innerHTML = isEdit ? '<i class="fa-solid fa-pen text-pink-500 mr-2"></i>Editar Playlist' : '<i class="fa-solid fa-folder-plus text-pink-500 mr-2"></i>Nova Playlist';
+
+            const previewImg = document.getElementById('pm-cover-preview');
+            const defaultPreview = "https://images.unsplash.com/photo-1518199266791-5375a83190b7?ixlib=rb-4.0.3&w=100&q=80";
+
+            if (isEdit) {
+                const pl = playlists[id];
+                document.getElementById('pm-id').value = id;
+                document.getElementById('pm-name').value = pl.title;
+                document.getElementById('pm-desc').value = pl.desc;
+                document.getElementById('pm-cover').value = pl.cover;
+                document.getElementById('pm-music').value = pl.music || "";
+                previewImg.src = pl.cover || defaultPreview;
+            } else {
+                document.getElementById('pm-id').value = "";
+                document.getElementById('pm-name').value = "";
+                document.getElementById('pm-desc').value = "";
+                document.getElementById('pm-cover').value = "";
+                document.getElementById('pm-music').value = "";
+                previewImg.src = defaultPreview;
+            }
+
+            // Atualiza o preview dinamicamente se o usuário colar um link de texto
+            const coverInput = document.getElementById('pm-cover');
+            coverInput.oninput = function () {
+                previewImg.src = coverInput.value.trim() || defaultPreview;
+            };
+
+            plModal.classList.remove('hidden');
+            setTimeout(() => { plModal.classList.remove('opacity-0'); document.getElementById('playlist-modal-content').classList.remove('scale-95'); }, 10);
+        }
+
+        function closePlaylistModal() {
+            plModal.classList.add('opacity-0');
+            document.getElementById('playlist-modal-content').classList.add('scale-95');
+            setTimeout(() => { plModal.classList.add('hidden'); }, 300);
+        }
+
+        function savePlaylist() {
+            const id = document.getElementById('pm-id').value || "pl_" + Date.now();
+            const title = document.getElementById('pm-name').value.trim();
+            if (!title) { alert("O título é obrigatório!"); return; }
+
+            playlists[id] = {
+                title: title,
+                desc: document.getElementById('pm-desc').value.trim(),
+                cover: document.getElementById('pm-cover').value.trim() || "https://images.unsplash.com/photo-1518199266791-5375a83190b7?ixlib=rb-4.0.3&w=400&q=80",
+                music: document.getElementById('pm-music').value.trim()
+            };
+
+            localStorage.setItem('lovify_playlists', JSON.stringify(playlists));
+            updateHeroCardUI();
+            renderSidebar(); renderHomeShortcuts(); closePlaylistModal();
+            if (currentActivePlaylistId === id) openPlaylistView(id);
+        }
+
+        function editCurrentPlaylist() { openPlaylistModal(currentActivePlaylistId); }
+        function deleteCurrentPlaylist() {
+            if (currentActivePlaylistId === 'hero-hit') return alert("O Maior Hit não pode ser eliminado!");
+            if (confirm("Eliminar esta Playlist permanentemente?")) {
+                delete playlists[currentActivePlaylistId]; delete sessionMedia[currentActivePlaylistId];
+                localStorage.setItem('lovify_playlists', JSON.stringify(playlists));
+                renderSidebar(); renderHomeShortcuts(); closePlaylist();
+            }
+        }
+
+        function handleFileUpload(event) {
+            if (!event.target.files.length || !currentActivePlaylistId) return;
+            if (!sessionMedia[currentActivePlaylistId]) sessionMedia[currentActivePlaylistId] = [];
+
+            // Se o único item for o placeholder padrão, limpamos antes de adicionar
+            if (sessionMedia[currentActivePlaylistId].length === 1 &&
+                sessionMedia[currentActivePlaylistId][0].url.includes('images.unsplash.com/photo-1518199266791-5375a83190b7')) {
+                sessionMedia[currentActivePlaylistId] = [];
+            }
+
+            const files = Array.from(event.target.files);
+            let processedCount = 0;
+
+            files.forEach(file => {
+                if (file.type.startsWith('video/')) {
+                    // Vídeos são salvos como URL temporária da sessão
+                    sessionMedia[currentActivePlaylistId].unshift({
+                        url: URL.createObjectURL(file),
+                        isVideo: true,
+                        isTemporary: true
+                    });
+                    processedCount++;
+                    if (processedCount === files.length) {
+                        saveMediaAndRender();
+                    }
+                } else {
+                    // Fotos são comprimidas e salvas como Base64 para persistirem no localStorage
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const img = new Image();
+                        img.onload = function () {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            const maxDim = 600; // Tamanho máximo das fotos da galeria
+                            let width = img.width;
+                            let height = img.height;
+
+                            if (width > height) {
+                                if (width > maxDim) {
+                                    height *= maxDim / width;
+                                    width = maxDim;
+                                }
+                            } else {
+                                if (height > maxDim) {
+                                    width *= maxDim / height;
+                                    height = maxDim;
+                                }
+                            }
+                            canvas.width = width;
+                            canvas.height = height;
+                            ctx.drawImage(img, 0, 0, width, height);
+
+                            const base64 = canvas.toDataURL('image/jpeg', 0.7);
+                            sessionMedia[currentActivePlaylistId].unshift({
+                                url: base64,
+                                isVideo: false
+                            });
+
+                            processedCount++;
+                            if (processedCount === files.length) {
+                                saveMediaAndRender();
+                            }
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            function saveMediaAndRender() {
+                localStorage.setItem('lovify_media', JSON.stringify(sessionMedia));
+                renderMediaGrid(currentActivePlaylistId);
+                event.target.value = '';
+            }
+        }
+
+        function renderMediaGrid(plId) {
+            const grid = document.getElementById('playlist-media-grid');
+            grid.innerHTML = '';
+            let mediaList = sessionMedia[plId] || [];
+
+            if (mediaList.length === 0) {
+                mediaList = [{ url: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?ixlib=rb-4.0.3&w=400&q=80", isVideo: false }];
+                sessionMedia[plId] = mediaList;
+            }
+
+            // Build the real (non-default) items list for stories
+            const storyItems = mediaList.filter(m => !m.url.includes('images.unsplash.com/photo-1518199266791-5375a83190b7'));
+            storyList = storyItems;
+
+            mediaList.forEach((media, idx) => {
+                const isDefault = media.url.includes('images.unsplash.com/photo-1518199266791-5375a83190b7');
+                const isSelected = selectedMediaIndices.includes(idx);
+
+                const card = document.createElement('div');
+                card.className = "media-card relative aspect-square rounded-md overflow-hidden bg-zinc-800 group border border-transparent hover:border-pink-500/50 transition fade-in" + (isSelected ? ' selected-for-delete' : '');
+                card.style.animationDelay = `${idx * 0.05}s`;
+                
+                // Mídia (imagem ou vídeo)
+                const mediaContent = media.isVideo ?
+                    `<video src="${media.url}" class="w-full h-full object-cover" loop muted autoplay playsinline></video>` :
+                    `<img src="${media.url}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" loading="lazy">`;
+                card.innerHTML = mediaContent;
+
+                if (deleteModeActive && !isDefault) {
+                    // ---- MODO ORGANIZAR: checkbox de seleção ----
+                    const ring = document.createElement('div');
+                    ring.className = 'media-card-select-ring' + (isSelected ? ' selected' : '');
+                    ring.title = isSelected ? 'Desmarcar' : 'Selecionar';
+                    card.appendChild(ring);
+
+                    // Dim overlay
+                    const overlay = document.createElement('div');
+                    overlay.className = 'absolute inset-0 bg-black/20 transition';
+                    card.appendChild(overlay);
+
+                    card.style.cursor = 'pointer';
+                    card.onclick = (e) => {
+                        e.stopPropagation();
+                        toggleMediaSelection(idx);
+                    };
+
+                } else if (!isDefault) {
+                    // ---- MODO NORMAL: abrir stories ao clicar ----
+                    // Find index in storyList
+                    const storyIdx = storyItems.findIndex(m => m.url === media.url && m.isVideo === media.isVideo);
+                    card.style.cursor = 'pointer';
+                    card.onclick = () => {
+                        if (!deleteModeActive) {
+                            openStoryViewer(storyIdx >= 0 ? storyIdx : 0);
+                        }
+                    };
+
+                    // Small hint icon on hover
+                    const hintIcon = document.createElement('div');
+                    hintIcon.className = 'absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200 pointer-events-none';
+                    hintIcon.innerHTML = `<div class="bg-black/50 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-sm">
+                        <i class="fa-solid fa-${media.isVideo ? 'play' : 'expand'} text-white text-sm"></i>
+                    </div>`;
+                    card.appendChild(hintIcon);
+                }
+                
+                grid.appendChild(card);
+            });
+
+            document.getElementById('pl-count').innerText = `• ${mediaList.length} Lembranças`;
+            updateDeleteSelectedBtn();
+        }
+
+        function toggleMediaSelection(idx) {
+            const pos = selectedMediaIndices.indexOf(idx);
+            if (pos === -1) {
+                selectedMediaIndices.push(idx);
+            } else {
+                selectedMediaIndices.splice(pos, 1);
+            }
+            renderMediaGrid(currentActivePlaylistId);
+        }
+
+        function updateDeleteSelectedBtn() {
+            const btn = document.getElementById('delete-selected-btn');
+            const label = document.getElementById('delete-selected-label');
+            if (!btn) return;
+            const count = selectedMediaIndices.length;
+            if (deleteModeActive && count > 0) {
+                btn.classList.remove('hidden');
+                btn.classList.add('flex');
+                label.textContent = `Apagar Selecionados (${count})`;
+            } else {
+                btn.classList.add('hidden');
+                btn.classList.remove('flex');
+            }
+        }
+
+        function deleteSelectedMedia() {
+            if (selectedMediaIndices.length === 0) return;
+            const count = selectedMediaIndices.length;
+            if (!confirm(`Apagar ${count} ${count === 1 ? 'item' : 'itens'} das suas lembranças? Esta ação não pode ser desfeita.`)) return;
+
+            const plId = currentActivePlaylistId;
+            if (sessionMedia[plId]) {
+                // Remove indices in descending order so splice doesn't shift them
+                const sorted = [...selectedMediaIndices].sort((a, b) => b - a);
+                sorted.forEach(idx => sessionMedia[plId].splice(idx, 1));
+                localStorage.setItem('lovify_media', JSON.stringify(sessionMedia));
+            }
+            selectedMediaIndices = [];
+            deleteModeActive = false;
+            const btn = document.getElementById('toggle-delete-mode-btn');
+            if (btn) {
+                btn.className = "bg-transparent border border-zinc-600 text-zinc-400 hover:border-red-500 hover:text-red-400 px-4 py-2 rounded-full font-bold text-sm transition flex items-center gap-2 select-none";
+                btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Organizar';
+            }
+            renderMediaGrid(plId);
+        }
+
+        function toggleDeleteMode() {
+            deleteModeActive = !deleteModeActive;
+            selectedMediaIndices = [];
+            const btn = document.getElementById('toggle-delete-mode-btn');
+            const delBtn = document.getElementById('delete-selected-btn');
+            if (btn) {
+                if (deleteModeActive) {
+                    btn.className = "bg-zinc-800 border border-zinc-500 text-white px-4 py-2 rounded-full font-bold text-sm transition flex items-center gap-2 select-none";
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> Concluir';
+                } else {
+                    btn.className = "bg-transparent border border-zinc-600 text-zinc-400 hover:border-red-500 hover:text-red-400 px-4 py-2 rounded-full font-bold text-sm transition flex items-center gap-2 select-none";
+                    btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Organizar';
+                    if (delBtn) { delBtn.classList.add('hidden'); delBtn.classList.remove('flex'); }
+                }
+            }
+            renderMediaGrid(currentActivePlaylistId);
+        }
+
+        // ===== STORIES VIEWER =====
+        function openStoryViewer(startIdx) {
+            const plId = currentActivePlaylistId;
+            const pl = playlists[plId] || {};
+            if (!storyList || storyList.length === 0) return;
+
+            currentStoryIndex = Math.max(0, Math.min(startIdx, storyList.length - 1));
+
+            // Header info
+            document.getElementById('story-header-cover').src = pl.cover || '';
+            document.getElementById('story-header-title').textContent = pl.title || 'Lembranças';
+
+            // Build progress bars
+            renderStoryProgressBars();
+
+            // Show viewer
+            const viewer = document.getElementById('story-viewer');
+            viewer.classList.remove('hidden');
+            viewer.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+
+            showStoryMedia();
+            bindStoryTouchEvents();
+        }
+
+        function renderStoryProgressBars() {
+            const container = document.getElementById('story-progress-bars');
+            container.innerHTML = '';
+            storyList.forEach((_, i) => {
+                const track = document.createElement('div');
+                track.className = 'story-bar-track';
+                track.id = `story-bar-${i}`;
+                const fill = document.createElement('div');
+                fill.className = 'story-bar-fill';
+                fill.id = `story-bar-fill-${i}`;
+                track.appendChild(fill);
+                container.appendChild(track);
+            });
+        }
+
+        function updateStoryBars() {
+            storyList.forEach((_, i) => {
+                const fill = document.getElementById(`story-bar-fill-${i}`);
+                if (!fill) return;
+                fill.className = 'story-bar-fill'; // reset
+                if (i < currentStoryIndex) {
+                    fill.style.width = '100%';
+                    fill.style.transition = 'none';
+                } else if (i > currentStoryIndex) {
+                    fill.style.width = '0%';
+                    fill.style.transition = 'none';
+                } else {
+                    // active: will be animated externally
+                    fill.style.width = '0%';
+                    fill.style.transition = 'none';
+                }
+            });
+        }
+
+        function showStoryMedia() {
+            clearStoryTimer();
+            const media = storyList[currentStoryIndex];
+            if (!media) { closeStoryViewer(); return; }
+
+            const container = document.getElementById('story-media-container');
+            container.innerHTML = '';
+
+            document.getElementById('story-header-count').textContent =
+                `${currentStoryIndex + 1} / ${storyList.length}`;
+
+            updateStoryBars();
+
+            if (media.isVideo) {
+                const vid = document.createElement('video');
+                vid.src = media.url;
+                vid.autoplay = true;
+                vid.playsInline = true;
+                vid.controls = false;
+                vid.loop = false;
+                vid.style.maxHeight = '85dvh';
+                vid.style.maxWidth = '100%';
+                vid.style.objectFit = 'contain';
+                vid.style.borderRadius = '8px';
+                vid.addEventListener('loadedmetadata', () => {
+                    storyDuration = Math.min(vid.duration * 1000, 30000);
+                    startStoryProgress();
+                });
+                vid.addEventListener('ended', () => nextStory());
+                vid.addEventListener('error', () => nextStory());
+                container.appendChild(vid);
+            } else {
+                const img = document.createElement('img');
+                img.src = media.url;
+                img.style.maxHeight = '85dvh';
+                img.style.maxWidth = '100%';
+                img.style.objectFit = 'contain';
+                img.style.borderRadius = '8px';
+                img.draggable = false;
+                img.addEventListener('load', () => {
+                    storyDuration = 5000;
+                    startStoryProgress();
+                });
+                img.addEventListener('error', () => nextStory());
+                // in case already cached
+                if (img.complete) {
+                    storyDuration = 5000;
+                    startStoryProgress();
+                }
+                container.appendChild(img);
+            }
+        }
+
+        function startStoryProgress() {
+            const fill = document.getElementById(`story-bar-fill-${currentStoryIndex}`);
+            if (!fill) return;
+            storyStartTime = performance.now();
+            storyElapsedTime = 0;
+            isStoryPaused = false;
+            fill.style.transition = `width ${storyDuration}ms linear`;
+            fill.style.width = '100%';
+            storyTimer = setTimeout(() => nextStory(), storyDuration);
+        }
+
+        function pauseStoryProgress() {
+            if (isStoryPaused) return;
+            isStoryPaused = true;
+            clearStoryTimer();
+            storyElapsedTime += performance.now() - storyStartTime;
+            const fill = document.getElementById(`story-bar-fill-${currentStoryIndex}`);
+            if (fill) {
+                // freeze progress bar at current position
+                const progress = Math.min(storyElapsedTime / storyDuration, 1);
+                fill.style.transition = 'none';
+                fill.style.width = `${progress * 100}%`;
+            }
+            // Pause video if present
+            const vid = document.querySelector('#story-media-container video');
+            if (vid) vid.pause();
+        }
+
+        function resumeStoryProgress() {
+            if (!isStoryPaused) return;
+            isStoryPaused = false;
+            const remaining = Math.max(storyDuration - storyElapsedTime, 100);
+            const fill = document.getElementById(`story-bar-fill-${currentStoryIndex}`);
+            if (fill) {
+                fill.style.transition = `width ${remaining}ms linear`;
+                fill.style.width = '100%';
+            }
+            storyStartTime = performance.now();
+            storyTimer = setTimeout(() => nextStory(), remaining);
+            // Resume video if present
+            const vid = document.querySelector('#story-media-container video');
+            if (vid) vid.play().catch(() => {});
+        }
+
+        function clearStoryTimer() {
+            if (storyTimer) { clearTimeout(storyTimer); storyTimer = null; }
+        }
+
+        function nextStory() {
+            clearStoryTimer();
+            if (currentStoryIndex < storyList.length - 1) {
+                currentStoryIndex++;
+                showStoryMedia();
+            } else {
+                closeStoryViewer();
+            }
+        }
+
+        function prevStory() {
+            clearStoryTimer();
+            if (currentStoryIndex > 0) {
+                currentStoryIndex--;
+                showStoryMedia();
+            } else {
+                // restart current
+                showStoryMedia();
+            }
+        }
+
+        function closeStoryViewer() {
+            clearStoryTimer();
+            // Stop any video
+            const vid = document.querySelector('#story-media-container video');
+            if (vid) { vid.pause(); vid.src = ''; }
+            const viewer = document.getElementById('story-viewer');
+            viewer.classList.add('hidden');
+            viewer.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        function bindStoryTouchEvents() {
+            const touchArea = document.getElementById('story-touch-area');
+            const leftZone = document.getElementById('story-left-zone');
+            const rightZone = document.getElementById('story-right-zone');
+
+            // Click left zone = prev, right zone = next
+            leftZone.onclick = (e) => { e.stopPropagation(); prevStory(); };
+            rightZone.onclick = (e) => { e.stopPropagation(); nextStory(); };
+
+            // Hold to pause (mouse)
+            const onHoldStart = (e) => {
+                storyHoldTimeout = setTimeout(() => pauseStoryProgress(), 120);
+            };
+            const onHoldEnd = (e) => {
+                clearTimeout(storyHoldTimeout);
+                resumeStoryProgress();
+            };
+
+            // Remove old listeners by cloning
+            const newTouchArea = touchArea.cloneNode(false);
+            touchArea.parentNode.replaceChild(newTouchArea, touchArea);
+
+            // Re-add children
+            newTouchArea.appendChild(leftZone);
+            newTouchArea.appendChild(rightZone);
+            const mediaContainer = document.getElementById('story-media-container');
+            newTouchArea.appendChild(mediaContainer);
+            const prevArrow = document.getElementById('story-prev-arrow');
+            const nextArrow = document.getElementById('story-next-arrow');
+            newTouchArea.appendChild(prevArrow);
+            newTouchArea.appendChild(nextArrow);
+
+            newTouchArea.addEventListener('mousedown', onHoldStart);
+            newTouchArea.addEventListener('mouseup', onHoldEnd);
+            newTouchArea.addEventListener('mouseleave', onHoldEnd);
+            newTouchArea.addEventListener('touchstart', onHoldStart, { passive: true });
+            newTouchArea.addEventListener('touchend', onHoldEnd, { passive: true });
+            newTouchArea.addEventListener('touchcancel', onHoldEnd, { passive: true });
+        }
+
+        // Close stories viewer on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const viewer = document.getElementById('story-viewer');
+                if (!viewer.classList.contains('hidden')) closeStoryViewer();
+            }
+            if (e.key === 'ArrowRight') {
+                const viewer = document.getElementById('story-viewer');
+                if (!viewer.classList.contains('hidden')) nextStory();
+            }
+            if (e.key === 'ArrowLeft') {
+                const viewer = document.getElementById('story-viewer');
+                if (!viewer.classList.contains('hidden')) prevStory();
+            }
+        });
+
+        const magicModal = document.getElementById('gemini-modal');
+        function openMagicModal() { initModalState(); magicModal.classList.remove('hidden'); setTimeout(() => { magicModal.classList.remove('opacity-0'); document.getElementById('gemini-modal-content').classList.remove('scale-95'); }, 10); }
+        function closeMagicModal() { magicModal.classList.add('opacity-0'); document.getElementById('gemini-modal-content').classList.add('scale-95'); setTimeout(() => { magicModal.classList.add('hidden'); }, 300); }
+    </script>
+    <!-- Falling Hearts Canvas Animation -->
+    <script>
+        (function () {
+            const canvas = document.getElementById('hearts-canvas');
+            const ctx = canvas.getContext('2d');
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            // Paleta de cores românticas
+            const colors = [
+                'rgba(236,72,153,', // pink-500
+                'rgba(190,24,93,',  // pink-700
+                'rgba(244,114,182,', // pink-400
+                'rgba(251,191,236,', // pink-200
+                'rgba(168,85,247,',  // purple-500
+                'rgba(220,38,120,',  // custom deep rose
+            ];
+
+            // Função de desenhar coração usando bézier
+            function drawHeart(ctx, x, y, size) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.beginPath();
+                ctx.moveTo(0, -size * 0.3);
+                ctx.bezierCurveTo(
+                    size * 0.5, -size * 1.0,
+                    size * 1.1, size * 0.1,
+                    0, size * 0.9
+                );
+                ctx.bezierCurveTo(
+                    -size * 1.1, size * 0.1,
+                    -size * 0.5, -size * 1.0,
+                    0, -size * 0.3
+                );
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Criar particulas
+            const TOTAL = 70;
+            const hearts = [];
+
+            function randomHeart() {
+                const size = Math.random() * 22 + 8;
+                const colorBase = colors[Math.floor(Math.random() * colors.length)];
+                const alpha = Math.random() * 0.45 + 0.45;
+                return {
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * -canvas.height,
+                    size: size,
+                    speedY: Math.random() * 1.2 + 0.4,
+                    speedX: (Math.random() - 0.5) * 0.5,
+                    rotation: Math.random() * Math.PI * 2,
+                    rotationSpeed: (Math.random() - 0.5) * 0.02,
+                    color: colorBase,
+                    alpha: alpha,
+                    wobble: Math.random() * Math.PI * 2,
+                    wobbleSpeed: Math.random() * 0.03 + 0.01,
+                };
+            }
+
+            for (let i = 0; i < TOTAL; i++) {
+                const h = randomHeart();
+                h.y = Math.random() * canvas.height; // Distribui já na tela ao iniciar
+                hearts.push(h);
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Fundo escuro base
+                ctx.fillStyle = 'rgba(10, 0, 8, 1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Gradiente sutil na parte superior (aura púrpura/rosa)
+                const grad = ctx.createRadialGradient(
+                    canvas.width * 0.5, 0, 0,
+                    canvas.width * 0.5, 0, canvas.height * 0.7
+                );
+                grad.addColorStop(0, 'rgba(180,24,90,0.30)');
+                grad.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                for (let h of hearts) {
+                    h.wobble += h.wobbleSpeed;
+                    h.y += h.speedY;
+                    h.x += h.speedX + Math.sin(h.wobble) * 0.4;
+                    h.rotation += h.rotationSpeed;
+
+                    // Recicla coração que saiu da tela
+                    if (h.y > canvas.height + h.size * 2) {
+                        Object.assign(h, randomHeart());
+                        h.y = -h.size * 2;
+                        h.x = Math.random() * canvas.width;
+                    }
+
+                    ctx.save();
+                    ctx.translate(h.x, h.y);
+                    ctx.rotate(h.rotation);
+                    if (h.size > 16) {
+                        ctx.shadowColor = h.color + '0.8)';
+                        ctx.shadowBlur = 18;
+                    } else {
+                        ctx.shadowBlur = 6;
+                        ctx.shadowColor = h.color + '0.5)';
+                    }
+                    ctx.fillStyle = h.color + h.alpha + ')';
+                    drawHeart(ctx, 0, 0, h.size);
+                    ctx.restore();
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        })();
+    </script>
+</body>
+
+</html>
